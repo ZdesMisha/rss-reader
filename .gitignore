@@ -1,0 +1,6 @@
+.idea
+node_modules
+rss-reader.iml
+target
+main/webapp/static/bower_components/
+main/webapp/main.js

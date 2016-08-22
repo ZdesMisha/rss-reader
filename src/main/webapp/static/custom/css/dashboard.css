@@ -35,7 +35,7 @@ body {
 
 /* Hide for mobile, show later */
 .sidebar {
-    display: none;
+    display: block;
 }
 
 @media (min-width: 768px) {
@@ -44,8 +44,8 @@ body {
         padding-top: 20px;
         z-index: 1000;
         display: block;
-        /*overflow-x: hidden;*/
-        /*overflow-y: auto; !* Scrollable contents if viewport is shorter than content. *!*/
+        overflow-x: hidden;
+        overflow-y: scroll; /* Scrollable contents if viewport is shorter than content. */
         background-color: #f5f5f5;
         border-right: 1px solid #eee;
         border-bottom: 1px solid #eee;
@@ -59,8 +59,8 @@ body {
         height: 100%;
         z-index: 1000;
         display: block;
-        /*overflow-x: hidden;*/
-        /*overflow-y: auto; !* Scrollable contents if viewport is shorter than content. *!*/
+        overflow-x: scroll;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
         padding-right: 40px;
         padding-left: 40px;
         background-color: #f7f7f7;
@@ -75,8 +75,8 @@ body {
         height: 100%;
         z-index: 1000;
         display: block;
-        /*overflow-x: hidden;*/
-        /*overflow-y: auto; !* Scrollable contents if viewport is shorter than content. *!*/
+        overflow-x: hidden;
+        overflow-y: scroll; /* Scrollable contents if viewport is shorter than content. */
         padding-right: 40px;
         padding-left: 40px;
         background-color: #ffffff;

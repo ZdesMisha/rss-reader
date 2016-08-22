@@ -2,8 +2,8 @@ import React from 'react';
 import Feed from './feed';
 import Reflux from 'reflux';
 import FeedStore from './store/feedStore';
-import ControlPanel from './controlPanel'
-import ReactScrollPagination from 'react-scroll-pagination';
+import jQuery from 'jquery';
+import ControlPanel from './controlPanel';
 
 
 module.exports = React.createClass({
@@ -13,7 +13,7 @@ module.exports = React.createClass({
     ],
 
     isolate: {
-        pageNumber: 0,
+        pageNo: 0,
         isRequesting: false,
         totalPages: 0
     },
@@ -25,39 +25,52 @@ module.exports = React.createClass({
         }
     },
 
+    getFeeds: function (page) {
+        FeedStore.getFeeds(page)
+    },
     getNextPage: function () {
-        if (this.isolate.isRequesting || (this.isolate.pageNumber > 0 && this.isolate.pageNumber >= this.isolate.totalPages)) {
-            return
+        var scrollHeight = document.getElementById("all-feeds").scrollHeight;
+        var scrollBottom = jQuery('#all-feeds').scrollTop();
+        var windowHeight = jQuery('#all-feeds').innerHeight();
+
+        console.log("windowHeight ", windowHeight);
+        console.log("trueheight ", scrollHeight);
+        console.log("scrollBottom ", scrollBottom);
+        if (scrollBottom + windowHeight >= scrollHeight) {
+            if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
+                return;
+            }
+            this.isolate.isRequesting = true;
+            this.getFeeds(this.isolate.pageNo)
         }
-        this.isolate.pageNumber++;
-        this.isolate.isRequesting = true;
-        FeedStore.getFeeds(this.isolate.pageNumber);
+
     },
 
     componentDidMount: function () {
-        this.getNextPage()
-    },
+        this.getFeeds(0);
 
+    },
 
     render: function () {
 
-        let feedlist = this.state.feeds.map((feed, index) => {
+        var feedlist = this.state.feeds.map((feed, index) => {
             return <Feed key={index} id={feed.id} title={feed.title}/>
         });
 
-        return (<div className="col-md-3 sidebar">
-            <ControlPanel/>
-            {feedlist}
-            <ReactScrollPagination
-                fetchFunc={this.getNextPage}
-                totalPages={this.state.totalPages}
-            />
-        </div>);
+        return (
+            <div className="col-md-3 sidebar" id="all-feeds" onScroll={this.getNextPage}>
+                <ControlPanel/>
+                {feedlist}
+            </div>
+        )
     },
 
     onChange: function (event, feeds) {
         this.isolate.isRequesting = false;
-        this.isolate.totalPages = 10;
-        this.setState({feeds: feeds});
+        this.isolate.totalPages = feeds.length/20;
+        this.setState({
+            totalPages: feeds.length/20,
+            feeds: this.state.feeds.concat(feeds)
+        });
     }
 });

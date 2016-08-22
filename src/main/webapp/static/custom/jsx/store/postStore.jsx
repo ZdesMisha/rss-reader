@@ -4,8 +4,10 @@
 var Api = require('../rest/api');
 var Reflux = require('reflux');
 var Actions = require('../action/actions');
+var FeedStore = require('./feedStore');
 
 module.exports = Reflux.createStore({
+
 
     listenables: [Actions],
 
@@ -66,5 +68,4 @@ module.exports = Reflux.createStore({
     triggerChange: function () {
         this.trigger('change', this.feed);
     }
-
 });

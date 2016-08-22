@@ -4,8 +4,6 @@ import Reflux from 'reflux';
 import PostStore from './store/postStore';
 import FeedStore from './store/feedStore';
 import SortingPanel from './sortingPanel';
-import ReactScrollPagination from 'react-scroll-pagination';
-
 
 
 module.exports = React.createClass({
@@ -16,7 +14,7 @@ module.exports = React.createClass({
     ],
 
     isolate: {
-        pageNumber: 0,
+        pageNo: 0,
         isRequesting: false,
         totalPages: 0
     },
@@ -25,28 +23,38 @@ module.exports = React.createClass({
         return {
             posts: [],
             feedTitle: "",
-            totalPages: 0
+            totalPages: 0,
+            feedId: ""
 
         }
     },
 
-    componentDidMount: function () {
-        this.getNextPage()
+    getPosts: function(page){
+        PostStore.getPosts(page)
     },
 
     getNextPage: function () {
-        if (this.isolate.isRequesting || (this.isolate.pageNumber > 0 && this.isolate.pageNumber >= this.isolate.totalPages)) {
-            return
+        var scrollHeight = document.getElementById("all-posts").scrollHeight;
+        var scrollBottom = jQuery('#all-posts').scrollTop();
+        var windowHeight = jQuery('#all-posts').innerHeight();
+        //
+        // console.log("windowHeight ", windowHeight);
+        // console.log("trueheight ", scrollHeight);
+        // console.log("scrollBottom ", scrollBottom);
+        if (scrollBottom + windowHeight >= scrollHeight) {
+            if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
+                return;
+            }
+            this.isolate.pageNo++;
+            this.isolate.isRequesting = true;
+            this.getPosts(this.isolate.pageNo)
         }
-        this.isolate.pageNumber++;
-        this.isolate.isRequesting = true;
-        console.log("next page");
-        PostStore.getPosts(this.isolate.pageNumber);
+
     },
 
     render: function () {
 
-        let postList = this.state.posts.map((post, i) => {
+        var postList = this.state.posts.map((post, i) => {
             return <Post key={i}
                          id={post.id}
                          title={post.title}
@@ -59,13 +67,9 @@ module.exports = React.createClass({
             />
         });
 
-        return (<div className="col-md-3 main">
+        return (<div className="col-md-3 main" id="all-posts" onScroll={this.getNextPage}>
             <SortingPanel/>
             {postList}
-            <ReactScrollPagination
-                fetchFunc={this.getNextPage}
-                totalPages={this.state.totalPages}
-            />
         </div>);
     },
 
@@ -73,12 +77,16 @@ module.exports = React.createClass({
         this.isolate.isRequesting = false;
         this.isolate.totalPages = 10;
         this.setState({
-            posts: feed.posts,
-            feedTitle: feed.title
+            posts: this.state.posts.concat(feed.posts)
         });
     },
     onInitChange: function (event, feeds) {
-        PostStore.getPosts(1);
+        this.isolate.totalPages=10;
+        this.setState({
+            feedId: feeds[0].id,
+            feedTitle: feeds[0].title
+        });
+        this.getPosts(0);
     }
 
 });

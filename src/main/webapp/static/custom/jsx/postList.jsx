@@ -3,7 +3,7 @@ import Post from './post';
 import Reflux from 'reflux';
 import PostStore from './store/postStore';
 import FeedStore from './store/feedStore';
-import SortingPanel from './sortingPanel';
+import SortingPanel from './sortingPanel'
 
 
 module.exports = React.createClass({
@@ -28,14 +28,6 @@ module.exports = React.createClass({
         }
     },
 
-    getPosts: function(page){
-        PostStore.getPosts(page)
-    },
-    
-    findPosts: function(pattern){
-        
-    },
-
     getNextPage: function () {
         var scrollHeight = document.getElementById("all-posts").scrollHeight;
         var scrollBottom = jQuery('#all-posts').scrollTop();
@@ -49,9 +41,8 @@ module.exports = React.createClass({
                 return;
             }
             this.isolate.isRequesting = true;
-            this.isolate.pageNo++;
-            console.log("post page ",this.isolate.pageNo);
-            this.getPosts(this.isolate.pageNo)
+            console.log("post page ", this.isolate.pageNo);
+            PostStore.getNextPage(this.isolate.pageNo)
         }
 
     },
@@ -77,13 +68,14 @@ module.exports = React.createClass({
         </div>);
     },
 
-    onChange: function (event, feed) {
+    onChange: function (event, feed, page) {
         this.isolate.isRequesting = false;
         this.setState({
             posts: feed.posts,
             feedId: feed.id,
-            feedTitle: feed.title
+            feedTitle: feed.title,
         });
+        this.isolate.pageNo = page;
     }
 
 });

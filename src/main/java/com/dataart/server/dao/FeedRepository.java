@@ -71,7 +71,7 @@ public class FeedRepository {
         }
     }
 
-    public List<Feed> getFeedPages(String sessionEmail,int pages){
+    public List<Feed> getFeedPages(String sessionEmail, int pages) {
         PreparedStatement statement;
         ResultSet result;
         try (Connection connection = DataSourceConfiguration.getConnection()) {
@@ -80,7 +80,7 @@ public class FeedRepository {
                     " (SELECT rss_id FROM users_rss WHERE user_id=" +
                     "(SELECT id FROM users WHERE email=?)) OFFSET ?");
             statement.setString(1, sessionEmail);
-            statement.setInt(2, PAGE_SIZE*pages);
+            statement.setInt(2, PAGE_SIZE * pages);
             result = statement.executeQuery();
             while (result.next()) {
                 list.add(new Feed(
@@ -118,7 +118,7 @@ public class FeedRepository {
         }
     }
 
-    public Feed findFeed(String sessionEmail, Long id,int startRow) {
+    public Feed findFeed(String sessionEmail, Long id, String sortField, String sortDir, int startRow) {
 
         PreparedStatement statement;
         ResultSet result;
@@ -149,7 +149,7 @@ public class FeedRepository {
             statement = connection.prepareStatement("" +
                     "SELECT post.id,post.description,post.title,post.link,post.pubdate,post.feed_id,post.guid,users_posts.viewed FROM" +
                     " post JOIN users_posts ON (post.id=users_posts.post_id) WHERE" +
-                    " users_posts.user_id=? and post.feed_id=? ORDER BY post.pubDate DESC  LIMIT ? OFFSET ? ");
+                    " users_posts.user_id=? and post.feed_id=? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ? ");
             statement.setLong(1, user_id);
             statement.setLong(2, id);
             statement.setInt(3, PAGE_SIZE);
@@ -378,10 +378,11 @@ public class FeedRepository {
         }
     }
 
-    public List<Post> searchByPattern(String sessionEmail, Long id, String pattern,int startRow) {
+    public Feed searchByPattern(String sessionEmail, Long id, String pattern, String sortField, String sortDir, int startRow) {
         PreparedStatement statement;
         ResultSet result;
         long user_id;
+        Feed feed = new Feed();
         List<Post> list = new ArrayList<>();
 
 
@@ -401,7 +402,7 @@ public class FeedRepository {
             statement = connection.prepareStatement("" +
                     "SELECT post.id,post.description,post.title,post.link,post.pubdate,post.guid,post.feed_id,users_posts.viewed FROM" +
                     " post JOIN users_posts ON (post.id=users_posts.post_id) WHERE" +
-                    " users_posts.user_id=? and post.feed_id=? and post.title LIKE ? ORDER BY post.pubDate DESC  LIMIT ? OFFSET ?");
+                    " users_posts.user_id=? and post.feed_id=? and post.title LIKE ? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ?");
             statement.setLong(1, user_id);
             statement.setLong(2, id);
             statement.setString(3, "%" + pattern + "%");
@@ -419,8 +420,8 @@ public class FeedRepository {
             }
 
             connection.commit();
-
-            return list;
+            feed.setPosts(list);
+            return feed;
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new RuntimeException("Cannot unassign feed from user. SQL exception");

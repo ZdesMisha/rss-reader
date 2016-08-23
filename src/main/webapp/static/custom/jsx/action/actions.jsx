@@ -1,5 +1,7 @@
 import Reflux from 'reflux';
 
 module.exports = Reflux.createActions([
-    'changeViewedFeedContent'
+    'changeViewedFeedContent',
+    'setPattern',
+    'cleanStorage'
 ]);

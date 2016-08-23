@@ -62,8 +62,8 @@ public class FeedService {
         return feedRepository.findAll("misha@mail.ru", Pager.getStartRow(page)).stream().map(feed -> rssReader.parseFeed(feed)).collect(Collectors.toList());
     }
 
-    public Feed getFeed(Long id, int page) {
-        return feedRepository.findFeed("misha@mail.ru", id, Pager.getStartRow(page));
+    public Feed getFeed(Long id, String sortField, String sortDir, int page) {
+        return feedRepository.findFeed("misha@mail.ru", id, sortField, sortDir, Pager.getStartRow(page));
     }
 
     public void refreshUserFeeds() {
@@ -78,7 +78,7 @@ public class FeedService {
     }
 
     public List<Feed> refreshUserFeedList(int pages) {
-        return feedRepository.getFeedPages("misha@mail.ru",pages);
+        return feedRepository.getFeedPages("misha@mail.ru", pages);
     }
 
     public Post getPost(Long id) {
@@ -86,7 +86,7 @@ public class FeedService {
     }
 
 
-    public List<Post> searchByPattern(Long id, String pattern, int page) {
-        return feedRepository.searchByPattern("misha@mail.ru", id, pattern, Pager.getStartRow(page));
+    public Feed searchByPattern(Long id, String pattern, String sortField, String sortDir, int page) {
+        return feedRepository.searchByPattern("misha@mail.ru", id, pattern, sortField, sortDir, Pager.getStartRow(page));
     }
 }

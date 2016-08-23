@@ -14,50 +14,73 @@ module.exports = Reflux.createStore({
     feed: {
         id: "",
         title: "",
-        link: "",
         posts: []
     },
 
-    page: 0,
-
     viewedPost: {},
 
-    getPosts: function (page) { //todo page
-        return Api.getPosts(this.feed.id, page).then(function (response) {
+    page: 0,
+    sortField: "pubDate",
+    sortDir: "asc",
+    searchPattern: "",
+
+
+    getNextPage: function (page) {
+        console.log("pattern ",this.searchPattern);
+        this.page = ++page;
+        return Api.getNextPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
             this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
             if (this.status == 200) {
                 this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-                this.page = page;
                 console.log(jsonBody);
                 this.triggerChange();
             }
             else {
-                console.log("GET POSTS ERROR OCCURRED");
+                console.log("GET NEXT PAGE ERROR OCCURRED");
             }
             return this.status;
         }.bind(this));
     },
 
 
-    findPosts: function (pattern, page) {
-        return Api.findPosts(this.feed.id, pattern, page).then(function (response) {
-            this.status = response.status;
-            return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            if (this.status == 200) {
-                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-                this.page = page;
-                console.log(jsonBody);
-                this.triggerChange();
-            }
-            else {
-                console.log("FIND POSTS ERROR OCCURRED");
-            }
-            return this.status;
-        }.bind(this));
-    },
+    // getPosts: function (page) { 
+    //     return Api.getPosts(this.feed.id, page).then(function (response) {
+    //         this.status = response.status;
+    //         return response.json();
+    //     }.bind(this)).then(function (jsonBody) {
+    //         if (this.status == 200) {
+    //             this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+    //             this.page = page;
+    //             console.log(jsonBody);
+    //             this.triggerChange();
+    //         }
+    //         else {
+    //             console.log("GET POSTS ERROR OCCURRED");
+    //         }
+    //         return this.status;
+    //     }.bind(this));
+    // },
+    //
+    //
+    // findPosts: function (pattern, page) {
+    //     return Api.findPosts(this.feed.id, pattern, page).then(function (response) {
+    //         this.status = response.status;
+    //         return response.json();
+    //     }.bind(this)).then(function (jsonBody) {
+    //         if (this.status == 200) {
+    //             this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+    //             this.page = page;
+    //             console.log(jsonBody);
+    //             this.triggerChange();
+    //         }
+    //         else {
+    //             console.log("FIND POSTS ERROR OCCURRED");
+    //         }
+    //         return this.status;
+    //     }.bind(this));
+    // },
 
     sortByDate: function (order, page) { //todo page
         return Api.getSortedPosts("pubDate", order, page).then(function (response) {
@@ -97,12 +120,14 @@ module.exports = Reflux.createStore({
     },
 
     changeViewedFeedContent: function () {
-        this.feed.id = FeedStore.viewedFeed.id;
-        this.feed.title = FeedStore.viewedFeed.title;
-        this.feed.posts = [];
-        console.log("check id ",this.feed.id);
+        this.feed = {
+            id: FeedStore.viewedFeed.id,
+            title: FeedStore.viewedFeed.title,
+            posts: []
+        };
+        console.log("check id ", this.feed.id);
         if (this.feed.id != null) {
-            this.getPosts(0);
+            this.getNextPage(0);
 
         } else {
             this.triggerChange()
@@ -110,7 +135,17 @@ module.exports = Reflux.createStore({
         }
     },
 
+    cleanStorage: function () {
+        this.feed.posts = [];
+        this.page = 0;
+    },
+
+    setPattern: function (pattern) {
+        console.log("CHANGING pattern ",this.searchPattern);
+        this.searchPattern = pattern;
+    },
+
     triggerChange: function () {
-        this.trigger('change', this.feed);
+        this.trigger('change', this.feed, this.page);
     }
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import PostStore from './store/postStore';
-import PostList from './postList';
+var Actions = require('./action/actions');
+
 
 module.exports = React.createClass({
 
@@ -9,11 +10,10 @@ module.exports = React.createClass({
     },
     handleChange: function (event) {
         this.setState({value: event.target.value});
-        if (event.target.value == "") {
-            PostStore.refreshPosts();
-        } else {
-            PostList.findPosts(event.target.value);
-        }
+        console.log("pattern before  ",event.target.value);
+        PostStore.cleanStorage();
+        PostStore.setPattern(event.target.value);
+        PostStore.getNextPage(0)
     },
 
     render: function () {

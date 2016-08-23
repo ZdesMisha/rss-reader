@@ -7,8 +7,6 @@ var Actions = require('../action/actions');
 
 module.exports = Reflux.createStore({
 
-    listenables: [Actions],
-
     feedStorage: {
         feeds: [],
         page: 0

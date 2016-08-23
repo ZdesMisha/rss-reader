@@ -10,20 +10,19 @@ module.exports = React.createClass({
 
     mixins: [
         Reflux.listenTo(PostStore, 'onChange'),
-        Reflux.listenTo(FeedStore, 'onInitChange')
     ],
 
     isolate: {
         pageNo: 0,
         isRequesting: false,
-        totalPages: 0
+        totalPages: 5
     },
 
     getInitialState: function () {
         return {
             posts: [],
             feedTitle: "",
-            totalPages: 0,
+            totalPages: 5,
             feedId: ""
 
         }
@@ -31,6 +30,10 @@ module.exports = React.createClass({
 
     getPosts: function(page){
         PostStore.getPosts(page)
+    },
+    
+    findPosts: function(pattern){
+        
     },
 
     getNextPage: function () {
@@ -45,8 +48,9 @@ module.exports = React.createClass({
             if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
                 return;
             }
-            this.isolate.pageNo++;
             this.isolate.isRequesting = true;
+            this.isolate.pageNo++;
+            console.log("post page ",this.isolate.pageNo);
             this.getPosts(this.isolate.pageNo)
         }
 
@@ -75,18 +79,11 @@ module.exports = React.createClass({
 
     onChange: function (event, feed) {
         this.isolate.isRequesting = false;
-        this.isolate.totalPages = 10;
         this.setState({
-            posts: this.state.posts.concat(feed.posts)
+            posts: feed.posts,
+            feedId: feed.id,
+            feedTitle: feed.title
         });
-    },
-    onInitChange: function (event, feeds) {
-        this.isolate.totalPages=10;
-        this.setState({
-            feedId: feeds[0].id,
-            feedTitle: feeds[0].title
-        });
-        this.getPosts(0);
     }
 
 });

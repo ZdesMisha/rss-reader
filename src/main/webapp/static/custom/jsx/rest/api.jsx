@@ -11,12 +11,27 @@ var deleteFeedUrl = SERVER_HOST + 'rest/feed/';
 var sortedPostsUrl = SERVER_HOST + 'rest/feed/sort/';
 var setViewedUrl = __SERVER_HOST__ + 'rest/feed/item/';
 var refreshFeedUrl = __SERVER_HOST__ + 'rest/feed/refresh';
+var refreshFeedListUrl = __SERVER_HOST__ + 'rest/feed/refreshList/';
 
 module.exports = {
 
 
-    getFeeds: function (page) {
+    fetchNextPage: function (page) {
         return fetch(feedsUrl + page, {
+            credentials: "include",
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response;
+            });
+    },
+
+    fetchPages:function (pages) {
+        return fetch(refreshFeedListUrl + pages, {
             credentials: "include",
             method: 'GET',
             headers: {

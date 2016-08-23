@@ -1,5 +1,6 @@
 import React from 'react';
 import PostStore from './store/postStore';
+import PostList from './postList';
 
 module.exports = React.createClass({
 
@@ -11,7 +12,7 @@ module.exports = React.createClass({
         if (event.target.value == "") {
             PostStore.refreshPosts();
         } else {
-            PostStore.findPosts(event.target.value);
+            PostList.findPosts(event.target.value);
         }
     },
 

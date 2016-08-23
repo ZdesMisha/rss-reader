@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import FeedStore from './store/feedStore';
-import PostStore from './store/postStore';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
 
@@ -15,19 +14,22 @@ module.exports = React.createClass({
     },
 
     toggle() {
-        this.setState({ showTooltip: true });
+        this.setState({showTooltip: true});
     },
 
     hide() {
-        this.setState({ showTooltip: false });
+        this.setState({showTooltip: false});
     },
 
     onLinkClick: function () {
         console.log("Clicked Link", this.props.id);
-        PostStore.getPosts(this.props.id);
+        FeedStore.setViewedFeed({
+            id: this.props.id,
+            title: this.props.title
+        });
     },
-    
-    onDeleteClick: function() {
+
+    onDeleteClick: function () {
         console.log("Clicked delete btn", this.props.id);
         FeedStore.deleteFeed(this.props.id);
     },
@@ -38,10 +40,11 @@ module.exports = React.createClass({
             container: this,
             target: () => ReactDOM.findDOMNode(this.refs.deleteBtn)
         };
-        return (<div className="feed-item" onClick={this.onLinkClick}>
+        return (<div className="feed-item" >
            <span className="feed-title">
-                {this.props.title}
-                <button ref="deleteBtn" onMouseEnter={this.toggle} onMouseOut={this.hide} onClick={this.onDeleteClick} className="btn btn-xs btn-danger glyphicon glyphicon-remove delete-btn"/>
+                <a onClick={this.onLinkClick}>{this.props.title}</a>
+               <button ref="deleteBtn" onMouseEnter={this.toggle} onMouseOut={this.hide} onClick={this.onDeleteClick}
+                       className="btn btn-xs btn-danger glyphicon glyphicon-remove delete-btn"/>
                <Overlay {...onDeleteProps} placement="left">
                 <Tooltip id="del-tooltip-left">Delete feed</Tooltip>
             </Overlay>

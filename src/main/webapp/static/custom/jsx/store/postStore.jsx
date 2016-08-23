@@ -18,51 +18,96 @@ module.exports = Reflux.createStore({
         posts: []
     },
 
+    page: 0,
+
+    viewedPost: {},
+
     getPosts: function (page) { //todo page
-        this.feed.id = 189;
-        return Api.getPosts(189,page).then(function (response) {
+        return Api.getPosts(this.feed.id, page).then(function (response) {
+            this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            this.feed = jsonBody;
-            console.log(jsonBody);
-            this.triggerChange();
-            return this.response;
+            if (this.status == 200) {
+                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+                this.page = page;
+                console.log(jsonBody);
+                this.triggerChange();
+            }
+            else {
+                console.log("GET POSTS ERROR OCCURRED");
+            }
+            return this.status;
         }.bind(this));
     },
 
 
-    findPosts: function (pattern) { //todo page
-        return Api.findPosts(this.feed.id , pattern,1).then(function (response) {
+    findPosts: function (pattern, page) {
+        return Api.findPosts(this.feed.id, pattern, page).then(function (response) {
+            this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            this.feed.posts = jsonBody;
-            console.log(jsonBody);
-            this.triggerChange();
-            return this.response;
+            if (this.status == 200) {
+                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+                this.page = page;
+                console.log(jsonBody);
+                this.triggerChange();
+            }
+            else {
+                console.log("FIND POSTS ERROR OCCURRED");
+            }
+            return this.status;
         }.bind(this));
     },
 
-    sortByDate: function (field, order) { //todo page
-        return Api.getSortedPosts(field, order,1).then(function (response) {
+    sortByDate: function (order, page) { //todo page
+        return Api.getSortedPosts("pubDate", order, page).then(function (response) {
+            this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            this.feed.posts = jsonBody;
-            console.log(jsonBody);
-            this.triggerChange();
-            return this.response;
+            if (this.status == 200) {
+                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+                this.page = page;
+                console.log(jsonBody);
+                this.triggerChange();
+            }
+            else {
+                console.log("SORT POSTS ERROR OCCURRED");
+            }
+            return this.status;
         }.bind(this));
     },
 
 
-    refreshPosts: function () { //todo page
-        return Api.getPosts(this.feed.id ,1).then(function (response) {
+    refreshPosts: function () {
+        return Api.getPosts(this.feed.id, 0).then(function (response) {
+            this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            this.feed = jsonBody;
-            console.log(jsonBody);
-            this.triggerChange();
-            return this.response;
+            if (this.status == 200) {
+                this.feed.posts = jsonBody.posts;
+                this.page = 0;
+                console.log(jsonBody);
+                this.triggerChange();
+            }
+            else {
+                console.log("REFRESH POSTS ERROR OCCURRED");
+            }
+            return this.status;
         }.bind(this));
+    },
+
+    changeViewedFeedContent: function () {
+        this.feed.id = FeedStore.viewedFeed.id;
+        this.feed.title = FeedStore.viewedFeed.title;
+        this.feed.posts = [];
+        console.log("check id ",this.feed.id);
+        if (this.feed.id != null) {
+            this.getPosts(0);
+
+        } else {
+            this.triggerChange()
+
+        }
     },
 
     triggerChange: function () {

@@ -21,7 +21,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {
             feeds: [],
-            totalPages: 0
+            totalPages: 5 //todo something with it
         }
     },
 
@@ -41,13 +41,8 @@ module.exports = React.createClass({
                 return;
             }
             this.isolate.isRequesting = true;
-            this.getFeeds(this.isolate.pageNo)
+            this.getFeeds(this.isolate.pageNo++)
         }
-
-    },
-
-    componentDidMount: function () {
-        this.getFeeds(0);
 
     },
 
@@ -67,10 +62,8 @@ module.exports = React.createClass({
 
     onChange: function (event, feeds) {
         this.isolate.isRequesting = false;
-        this.isolate.totalPages = feeds.length/20;
         this.setState({
-            totalPages: feeds.length/20,
-            feeds: this.state.feeds.concat(feeds)
+            feeds: feeds
         });
     }
 });

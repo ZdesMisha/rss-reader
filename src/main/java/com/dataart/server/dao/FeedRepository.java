@@ -71,6 +71,30 @@ public class FeedRepository {
         }
     }
 
+    public List<Feed> getFeedPages(String sessionEmail,int pages){
+        PreparedStatement statement;
+        ResultSet result;
+        try (Connection connection = DataSourceConfiguration.getConnection()) {
+            List<Feed> list = new ArrayList<>();
+            statement = connection.prepareStatement("SELECT * FROM rss WHERE id IN" +
+                    " (SELECT rss_id FROM users_rss WHERE user_id=" +
+                    "(SELECT id FROM users WHERE email=?)) OFFSET ?");
+            statement.setString(1, sessionEmail);
+            statement.setInt(2, PAGE_SIZE*pages);
+            result = statement.executeQuery();
+            while (result.next()) {
+                list.add(new Feed(
+                        result.getLong("id"),
+                        result.getString("title"),
+                        result.getString("link")));
+            }
+            return list;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Cannot refresh all feeds");
+        }
+    }
+
     public List<Feed> findByEmail(String sessionEmail) {
         try (Connection connection = DataSourceConfiguration.getConnection()) {
             List<Feed> list = new ArrayList<>();

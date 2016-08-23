@@ -84,6 +84,14 @@ public class FeedResource {
     }
 
     @GET
+    @Path("/refreshList/{pages}")
+    public Response refreshAll(@PathParam("pages")int pages){
+        System.out.println("Refresh all!");
+        feedService.refreshUserFeedList(pages);
+        return JsonUtils.buildResponse(feedService.refreshUserFeedList(pages), 200);
+    }
+
+    @GET
     @Path("/search/{id}/{pattern}/{page}")
     public Response searchPssts(@PathParam("id")Long feedId,@PathParam("pattern") String pattern,@PathParam("page") int page){
         System.out.println("find posts");

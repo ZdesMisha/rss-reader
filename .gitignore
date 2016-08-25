@@ -2,5 +2,5 @@
 node_modules
 rss-reader.iml
 target
-main/webapp/static/bower_components/
-main/webapp/WEB-INF/main.js
+src/main/webapp/static/bower_components/
+src/main/webapp/WEB-INF/main.js

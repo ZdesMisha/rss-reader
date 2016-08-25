@@ -13,7 +13,7 @@ import java.sql.ResultSet;
  */
 @Singleton
 @Stateless
-public class UserRepository {
+public class UserDao {
 
 
     public void create(String email, String password) {

@@ -1,7 +1,7 @@
 package com.dataart.server.cache;
 
-import com.dataart.server.dao.FeedRepository;
-import com.dataart.server.dao.UserRepository;
+import com.dataart.server.dao.FeedDao;
+import com.dataart.server.dao.UserDao;
 import com.dataart.server.persistence.Feed;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
@@ -21,10 +21,10 @@ public class LocalCacheManager {
     private Map<String,LocalCache> localCacheMap = new ConcurrentHashMap<>();
 
     @InjectParam
-    private FeedRepository feedRepository;
+    private FeedDao feedDao;
 
     @InjectParam
-    private UserRepository repository;
+    private UserDao repository;
 
 
     private void refreshUserCache(String sessionEmail){

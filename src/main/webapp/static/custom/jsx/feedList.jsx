@@ -47,10 +47,14 @@ module.exports = React.createClass({
     },
 
     render: function () {
-
-        var feedlist = this.state.feeds.map((feed, index) => {
-            return <Feed key={index} id={feed.id} title={feed.title}/>
-        });
+        var feedlist;
+        if (this.state.feeds.length > 0) {
+            feedlist = this.state.feeds.map((feed, index) => {
+                return <Feed key={index} id={feed.id} title={feed.title}/>
+            });
+        } else {
+            feedlist = <p className="empty-list">No feeds. Click plus to add new feed</p>
+        }
 
         return (
             <div className="col-md-3 sidebar" id="all-feeds" onScroll={this.getNextPage}>

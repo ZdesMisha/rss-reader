@@ -11,19 +11,26 @@ import java.util.Date;
  */
 public class DateConverter {
 
-    private static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss";
+    private static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
     public static Date parseDate(String dateToParse) {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         try {
-            return format.parse(dateToParse);
+            if (dateToParse.trim().length() == 0) {
+                return new Date();
+            } else {
+                return format.parse(dateToParse);
+            }
         } catch (ParseException ex) {
-            System.out.println("Unable to parse string to date");
+            System.out.println("Unable to parse string to date: " + dateToParse);
             throw new RuntimeException("Unable to parse string to date");
         }
     }
 
-    public static Timestamp toSqlTimestamp (Date date){
+    public static Timestamp toSqlTimestamp(Date date) {
+        if(date==null){
+            return null;
+        }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.MILLISECOND, 0);

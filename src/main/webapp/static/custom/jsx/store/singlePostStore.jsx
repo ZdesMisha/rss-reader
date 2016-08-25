@@ -2,24 +2,44 @@
  * Created by misha on 09.06.16.
  */
 var Reflux = require('reflux');
-import Api from '../rest/api'
+import Api from '../rest/api';
+import PostStore from './postStore';
+var Actions = require('../action/actions');
+import jQuery from 'jquery';
+
+
 
 module.exports = Reflux.createStore({
 
-    showPost: function (id, title, description, link, pubDate) {
-        this.post = {
-            id: id,
-            title: title,
-            description: description,
-            link: link,
-            pubDate: pubDate
-        };
-        this.triggerChange();
+    listenables: [Actions],
+
+    post: {},
+
+    showPost: function (id) {
+        return Api.getPost(id).then(function (response) {
+            this.status = response.status;
+            return response.json();
+        }.bind(this)).then(function (jsonBody) {
+            if (this.status == 200) {
+                console.log("GET POST SUCCESS");
+                this.post = jsonBody;
+                this.triggerChange();
+            } else {
+                console.log("GET POST ERROR OCCURRED");//TODO error message
+            }
+            return this.status;
+        }.bind(this));
     },
 
-    setViewed: function (id) {
-        return Api.setPostViewed(id).then(function (response) {
-        }.bind(this));
+
+    viewedPostChanged: function () {
+
+        this.post = PostStore.viewedPost;
+        if (jQuery.isEmptyObject(this.post)) {
+            this.triggerChange();
+        } else {
+            this.showPost(this.post.id);
+        }
     },
 
     triggerChange: function () {

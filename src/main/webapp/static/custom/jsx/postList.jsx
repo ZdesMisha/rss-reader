@@ -48,19 +48,23 @@ module.exports = React.createClass({
     },
 
     render: function () {
+        var postList;
+        if (this.state.posts.length > 0) {
+            postList = this.state.posts.map((post, i) => {
+                return <Post key={i}
+                             id={post.id}
+                             title={post.title}
+                             link={post.link}
+                             description={post.description}
+                             pubDate={post.pubDate}
+                             isViewed={post.viewed}
+                             feedtitle={this.state.feedTitle}
 
-        var postList = this.state.posts.map((post, i) => {
-            return <Post key={i}
-                         id={post.id}
-                         title={post.title}
-                         link={post.link}
-                         description={post.description}
-                         pubDate={post.pubDate}
-                         isViewed={post.viewed}
-                         feedtitle={this.state.feedTitle}
-
-            />
-        });
+                />
+            });
+        } else {
+            postList = <p className="empty-list">No posts</p>
+        }
 
         return (<div className="col-md-3 main" id="all-posts" onScroll={this.getNextPage}>
             <SortingPanel/>

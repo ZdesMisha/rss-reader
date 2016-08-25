@@ -24,14 +24,20 @@ public class Post {
     public Post(){
     }
 
-    public Post(Long id, String title, String description, String link, Date pubDate,String guid, boolean isViewed) {
+
+    public Post(Long id, String title, Date pubDate,boolean isViewed) {
+        this.id = id;
+        this.title = title;
+        this.pubDate = pubDate;
+        this.isViewed = isViewed;
+    }
+
+    public Post(Long id, String title, String description, String link, Date pubDate) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.link = link;
         this.pubDate = pubDate;
-        this.guid = guid;
-        this.isViewed = isViewed;
     }
 
 

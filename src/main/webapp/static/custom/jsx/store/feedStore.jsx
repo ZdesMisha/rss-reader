@@ -14,24 +14,17 @@ module.exports = Reflux.createStore({
 
     viewedFeed: {},
 
-
     init(){
-        this.fetchNextPage(this.feedStorage.page);
-        console.log("init storage");
+        this.getNextPage(this.feedStorage.page);
     },
 
     setViewedFeed: function (feed) {
         this.viewedFeed = feed;
-        console.log("SET VIEWED VIEWED ID ",this.viewedFeed.id);//TODO error message
-        Actions.changeViewedFeedContent();
+        Actions.viewedFeedChanged();
     },
 
-    getFeeds: function () {
-        return this.feedStorage.feeds;
-    },
-
-    fetchNextPage: function (page) {
-        return Api.fetchNextPage(page).then(function (response) {
+    getNextPage: function (page) {
+        return Api.fetchNextFeedPage(page).then(function (response) {
             this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
@@ -47,21 +40,15 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
 
-
     deleteFeed: function (id) {
-        console.log("delete staart");
         return Api.deleteFeed(id).then(function (response) {
             this.status = response.status;
             if (this.status == 200) {
-                console.log("delete success");
-                console.log("VIEWED ID ",this.viewedFeed.id);//TODO error message
-                console.log("ID TO DELETE",id);//TODO error message
-
                 if (id == this.viewedFeed.id) {
                     this.viewedFeed = {};
-                    Actions.changeViewedFeedContent();
+                    Actions.getFeedPages();
                 }
-                this.refreshFeedList();
+                this.refreshFeeds();
             } else {
                 console.log("DELETE ERROR OCCURRED");//TODO error message
             }
@@ -74,7 +61,7 @@ module.exports = Reflux.createStore({
             this.status = response.status;
             if (this.status == 200) {
                 console.log("ADD SUCCESS");
-                this.refreshFeedList();
+                this.getFeedPages();
             } else {
                 console.log("ADD ERROR OCCURRED");//TODO error message
             }
@@ -82,8 +69,8 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
 
-    refreshFeedList:function(){
-        return Api.fetchPages(this.feedStorage.page).then(function (response) {
+    getFeedPages:function(){
+        return Api.fetchFeedPages(this.feedStorage.page).then(function (response) {
             this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {

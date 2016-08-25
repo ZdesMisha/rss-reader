@@ -39,7 +39,6 @@ public class RssReader {
                         feed.setTitle(getData(xmlReader.nextEvent()));
                     }
                 }
-                posts.forEach(System.out::println);
                 feed.setPosts(posts);
             } catch (Exception ex) {
                 System.out.println("Cannot parse rss: "+feed.getLink());
@@ -63,6 +62,7 @@ public class RssReader {
         while (reader.hasNext()) {
             innerEvent = reader.nextEvent();
             if (innerEvent.isEndElement() && innerEvent.asEndElement().getName().getLocalPart().toUpperCase().equals("ITEM")) {
+                System.out.println("New post "+title+" , "+link+" , "+pubDate+" , "+desc);
                 post.setTitle(title);
                 post.setLink(link);
                 post.setPubDate(DateConverter.parseDate(pubDate));

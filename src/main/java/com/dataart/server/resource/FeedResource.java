@@ -90,20 +90,7 @@ public class FeedResource {
         return JsonUtils.buildResponse(feedService.getAllDetailed(page), 200);
     }
 
-    @PUT
-    @Path("/item/{id}")
-    public Response setViewed(@PathParam("id") Long id) {
-        System.out.println("set Viewed!");
-        feedService.setViewed(id);
-        return JsonUtils.buildResponse("Feed viewed", 200);
-    }
 
-    @GET
-    @Path("/item/{id}")
-    public Response getPost(@PathParam("id") Long id) {
-        System.out.println("get Feed Item!");
-        return JsonUtils.buildResponse(feedService.getPost(id), 200);
-    }
 
 
 }

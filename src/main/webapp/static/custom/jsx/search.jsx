@@ -8,6 +8,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {value: ''};
     },
+
     handleChange: function (event) {
         this.setState({value: event.target.value});
         console.log("pattern before  ",event.target.value);
@@ -21,7 +22,7 @@ module.exports = React.createClass({
             <div>
                 <form id="form-search" className="navbar-form navbar-right">
                     <input type="text"
-                           placeholder="Global search"
+                           placeholder="Search for posts..."
                            onChange={this.handleChange} className="form-control"/>
                 </form>
             </div>

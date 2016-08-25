@@ -21,14 +21,13 @@ module.exports = Reflux.createStore({
 
     page: 0,
     sortField: "pubDate",
-    sortDir: "asc",
+    sortDir: "desc",
     searchPattern: "",
 
 
     getNextPage: function (page) {
-        console.log("pattern ",this.searchPattern);
         this.page = ++page;
-        return Api.getNextPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
+        return Api.fetchNextPostPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
             this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
@@ -44,105 +43,55 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
 
+    
 
-    // getPosts: function (page) { 
-    //     return Api.getPosts(this.feed.id, page).then(function (response) {
-    //         this.status = response.status;
-    //         return response.json();
-    //     }.bind(this)).then(function (jsonBody) {
-    //         if (this.status == 200) {
-    //             this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-    //             this.page = page;
-    //             console.log(jsonBody);
-    //             this.triggerChange();
-    //         }
-    //         else {
-    //             console.log("GET POSTS ERROR OCCURRED");
-    //         }
-    //         return this.status;
-    //     }.bind(this));
-    // },
-    //
-    //
-    // findPosts: function (pattern, page) {
-    //     return Api.findPosts(this.feed.id, pattern, page).then(function (response) {
-    //         this.status = response.status;
-    //         return response.json();
-    //     }.bind(this)).then(function (jsonBody) {
-    //         if (this.status == 200) {
-    //             this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-    //             this.page = page;
-    //             console.log(jsonBody);
-    //             this.triggerChange();
-    //         }
-    //         else {
-    //             console.log("FIND POSTS ERROR OCCURRED");
-    //         }
-    //         return this.status;
-    //     }.bind(this));
-    // },
-
-    sortByDate: function (order, page) { //todo page
-        return Api.getSortedPosts("pubDate", order, page).then(function (response) {
-            this.status = response.status;
-            return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            if (this.status == 200) {
-                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-                this.page = page;
-                console.log(jsonBody);
-                this.triggerChange();
-            }
-            else {
-                console.log("SORT POSTS ERROR OCCURRED");
-            }
-            return this.status;
-        }.bind(this));
-    },
-
-
-    refreshPosts: function () {
-        return Api.getPosts(this.feed.id, 0).then(function (response) {
-            this.status = response.status;
-            return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            if (this.status == 200) {
-                this.feed.posts = jsonBody.posts;
-                this.page = 0;
-                console.log(jsonBody);
-                this.triggerChange();
-            }
-            else {
-                console.log("REFRESH POSTS ERROR OCCURRED");
-            }
-            return this.status;
-        }.bind(this));
-    },
-
-    changeViewedFeedContent: function () {
+    viewedFeedChanged: function () {
         this.feed = {
             id: FeedStore.viewedFeed.id,
             title: FeedStore.viewedFeed.title,
             posts: []
         };
-        console.log("check id ", this.feed.id);
         if (this.feed.id != null) {
             this.getNextPage(0);
-
         } else {
             this.triggerChange()
-
         }
+        this.viewedPost = {};
+        Actions.viewedPostChanged();
+    },
+
+    setViewedPost: function (id) {
+        this.viewedPost={id:id};
+        Actions.viewedPostChanged();
+    },
+
+
+    setViewed: function (id) { //TODO finish it
+        return Api.setPostViewed(id).then(function (response) {
+        }.bind(this));
+    },
+
+    setPattern: function (pattern) {
+        this.cleanStorage();
+        this.searchPattern = pattern;
+        this.getNextPage(0)
+    },
+
+    setSortField: function (sortField) {
+        this.cleanStorage();
+        this.sortField = sortField;
+        this.getNextPage(0)
+    },
+
+    setSortDirection: function (sortDir) {
+        this.cleanStorage();
+        this.sortDir = sortDir;
+        this.getNextPage(0)
     },
 
     cleanStorage: function () {
         this.feed.posts = [];
         this.page = 0;
-    },
-
-    setPattern: function (pattern) {
-        console.log("CHANGING pattern ",this.searchPattern);
-        this.searchPattern = pattern;
     },
 
     triggerChange: function () {

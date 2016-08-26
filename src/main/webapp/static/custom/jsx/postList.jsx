@@ -12,17 +12,12 @@ module.exports = React.createClass({
         Reflux.listenTo(PostStore, 'onChange'),
     ],
 
-    isolate: {
-        pageNo: 0,
-        isRequesting: false,
-        totalPages: 5
-    },
+    isRequesting: false,
 
     getInitialState: function () {
         return {
             posts: [],
             feedTitle: "",
-            totalPages: 5,
             feedId: ""
 
         }
@@ -32,16 +27,12 @@ module.exports = React.createClass({
         var scrollHeight = document.getElementById("all-posts").scrollHeight;
         var scrollBottom = jQuery('#all-posts').scrollTop();
         var windowHeight = jQuery('#all-posts').innerHeight();
-        // console.log("windowHeight ", windowHeight);
-        // console.log("trueheight ", scrollHeight);
-        // console.log("scrollBottom ", scrollBottom);
         if (scrollBottom + windowHeight >= scrollHeight) {
-            if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
+            if (this.isRequesting) {
                 return;
             }
-            this.isolate.isRequesting = true;
-            console.log("post page ", this.isolate.pageNo);
-            PostStore.getNextPage(this.isolate.pageNo)
+            this.isRequesting = true;
+            PostStore.getNextPage()
         }
 
     },
@@ -71,14 +62,13 @@ module.exports = React.createClass({
         </div>);
     },
 
-    onChange: function (event, feed, page) {
-        this.isolate.isRequesting = false;
+    onChange: function (event, feed) {
+        this.isRequesting = false;
         this.setState({
             posts: feed.posts,
             feedId: feed.id,
             feedTitle: feed.title,
         });
-        this.isolate.pageNo = page;
     }
 
 });

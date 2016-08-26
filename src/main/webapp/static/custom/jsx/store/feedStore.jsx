@@ -45,10 +45,9 @@ module.exports = Reflux.createStore({
             this.status = response.status;
             if (this.status == 200) {
                 if (id == this.viewedFeed.id) {
-                    this.viewedFeed = {};
-                    Actions.getFeedPages();
+                    this.setViewedFeed({});
                 }
-                this.refreshFeeds();
+                this.getFeedPages();
             } else {
                 console.log("DELETE ERROR OCCURRED");//TODO error message
             }

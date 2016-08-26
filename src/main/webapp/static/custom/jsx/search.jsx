@@ -11,9 +11,8 @@ module.exports = React.createClass({
 
     handleChange: function (event) {
         this.setState({value: event.target.value});
-        console.log("pattern before  ",event.target.value);
         PostStore.cleanStorage();
-        PostStore.setPattern(event.target.value);
+        PostStore.setSearchPattern(event.target.value);
     },
 
     render: function () {

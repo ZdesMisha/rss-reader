@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 /**
  * Created by misha on 25.08.16.
  */
-@Path("feed/post")
+@Path("/feed/post")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class PostResource {
 

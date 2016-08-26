@@ -32,11 +32,11 @@ module.exports = React.createClass({
     },
 
     onSortDesc() {
-        PostStore.sortByDate('pubDate','desc');
+        PostStore.setSortDirection('desc');
     },
 
     onSortAsc: function () {
-        PostStore.sortByDate('pubDate','asc');
+        PostStore.setSortDirection('asc');
     },
 
     render: function () {
@@ -53,8 +53,8 @@ module.exports = React.createClass({
         };
 
         return (<div className="control-panel">
-            <button  ref="DescSortBtn" onMouseEnter={this.toggleDescTooltip} onMouseOut={this.hideDescTooltip} className="btn btn-xs btn-primary glyphicon glyphicon-arrow-up refresh-btn"/>
-            <button  ref="AscSortBtn" onMouseEnter={this.toggleAscTooltip} onMouseOut={this.hideAscTooltip} className="btn btn-xs btn-primary glyphicon glyphicon-arrow-down "/>
+            <button  ref="DescSortBtn"  onClick={this.onSortDesc} onMouseEnter={this.toggleDescTooltip} onMouseOut={this.hideDescTooltip} className="btn btn-xs btn-primary glyphicon glyphicon-arrow-up refresh-btn"/>
+            <button  ref="AscSortBtn" onClick={this.onSortAsc} onMouseEnter={this.toggleAscTooltip} onMouseOut={this.hideAscTooltip} className="btn btn-xs btn-primary glyphicon glyphicon-arrow-down "/>
             <Overlay {...onSortDescProps} placement="top">
                 <Tooltip id="desc-right">Show newest</Tooltip>
             </Overlay>

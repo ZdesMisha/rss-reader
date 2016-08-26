@@ -20,40 +20,41 @@ module.exports = Reflux.createStore({
     viewedPost: {},
 
     page: 0,
+    totalPages: 5,
     sortField: "pubDate",
     sortDir: "desc",
     searchPattern: "",
 
 
-    getNextPage: function (page) {
-        this.page=page;
-        return Api.fetchNextPostPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
-            this.status = response.status;
-            return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            if (this.status == 200) {
-                this.page++;
-                this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-                console.log(jsonBody);
-                this.triggerChange();
-            }
-            else {
-                console.log("GET NEXT PAGE ERROR OCCURRED");
-            }
-            return this.status;
-        }.bind(this));
+    getNextPage: function () {
+        if (this.page < this.totalPages && this.page >= 0) {
+            return Api.fetchNextPostPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
+                this.status = response.status;
+                return response.json();
+            }.bind(this)).then(function (jsonBody) {
+                if (this.status == 200) {
+                    this.page++;
+                    this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+                    console.log(jsonBody);
+                    this.triggerChange();
+                }
+                else {
+                    console.log("GET NEXT PAGE ERROR OCCURRED");
+                }
+                return this.status;
+            }.bind(this));
+        }
     },
 
-    
 
     viewedFeedChanged: function () {
         this.feed = {
             id: FeedStore.viewedFeed.id,
             title: FeedStore.viewedFeed.title,
-            posts: []
         };
+        this.cleanStorage();
         if (this.feed.id != null) {
-            this.getNextPage(0);
+            this.getNextPage();
         } else {
             this.triggerChange()
         }
@@ -62,7 +63,7 @@ module.exports = Reflux.createStore({
     },
 
     setViewedPost: function (id) {
-        this.viewedPost={id:id};
+        this.viewedPost = {id: id};
         Actions.viewedPostChanged();
     },
 
@@ -72,22 +73,22 @@ module.exports = Reflux.createStore({
         }.bind(this));
     },
 
-    setPattern: function (pattern) {
+    setSearchPattern: function (pattern) {
         this.cleanStorage();
         this.searchPattern = pattern;
-        this.getNextPage(0)
+        this.getNextPage()
     },
 
     setSortField: function (sortField) {
         this.cleanStorage();
         this.sortField = sortField;
-        this.getNextPage(0)
+        this.getNextPage()
     },
 
     setSortDirection: function (sortDir) {
         this.cleanStorage();
         this.sortDir = sortDir;
-        this.getNextPage(0)
+        this.getNextPage()
     },
 
     cleanStorage: function () {
@@ -96,6 +97,6 @@ module.exports = Reflux.createStore({
     },
 
     triggerChange: function () {
-        this.trigger('change', this.feed, this.page);
+        this.trigger('change', this.feed);
     }
 });

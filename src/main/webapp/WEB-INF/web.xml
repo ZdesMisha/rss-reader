@@ -5,12 +5,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <listener>
-        <listener-class>
-            com.dataart.server.CustomContextListener
-        </listener-class>
-    </listener>
-
 
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>
@@ -25,11 +19,15 @@
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
         </init-param>
+        <init-param>
+                <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+                <param-value>com.dataart.server.authenticaion.AuthFilter</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>Jersey REST Service</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
+        <url-pattern>/rest</url-pattern>
     </servlet-mapping>
 
 

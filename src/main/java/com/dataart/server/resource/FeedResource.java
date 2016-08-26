@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 /**
  * Created by misha on 08.08.16.
  */
-@Path("feed")
+@Path("/feed")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class FeedResource {
 

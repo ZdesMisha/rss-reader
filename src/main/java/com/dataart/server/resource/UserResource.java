@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by misha on 08.08.16.
  */
-@Path("bye")
+@Path("/bye")
 @Produces(MediaType.TEXT_PLAIN)
 public class UserResource {
 

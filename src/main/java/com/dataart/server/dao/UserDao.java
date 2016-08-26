@@ -41,16 +41,4 @@ public class UserDao {
         }
     }
 
-    public void assingLinkToUser(Long user_id,Long rss_id){
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO users_rss (user_id,rss_id) VALUES (?,?)");
-            statement.setLong(1, user_id);
-            statement.setLong(2, rss_id);
-            statement.executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot assign link");
-        }
-    }
-
 }

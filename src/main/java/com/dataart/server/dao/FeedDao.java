@@ -49,7 +49,7 @@ public class FeedDao {
         try (Connection connection = DataSourceConfiguration.getConnection()) {
             List<Feed> list = new ArrayList<>();
             statement = connection.prepareStatement(
-                    "SELECT * FROM rss" +
+                    "SELECT * FROM rss " +
                             "WHERE id IN (SELECT rss_id FROM users_rss WHERE user_id=(SELECT id FROM users WHERE email=?)) " +
                             "OFFSET ?");
             statement.setString(1, sessionEmail);
@@ -351,8 +351,8 @@ public class FeedDao {
                 preparedStatement.setLong(1, post_id);
                 preparedStatement.setLong(2, feed.getId());
                 preparedStatement.setLong(3, user_id);
-                preparedStatement.setLong(3, post_id);
-                preparedStatement.setLong(3, user_id);
+                preparedStatement.setLong(4, post_id);
+                preparedStatement.setLong(5, user_id);
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();

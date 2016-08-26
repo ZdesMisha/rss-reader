@@ -28,7 +28,7 @@ CREATE TABLE users_posts (
   post_id INT NOT NULL REFERENCES post (id) ON UPDATE CASCADE ON DELETE CASCADE,
   feed_id INT NOT NULL REFERENCES rss (id) ON UPDATE CASCADE ON DELETE CASCADE,
   user_id INT NOT NULL REFERENCES users (id) ON UPDATE CASCADE,
-  CONSTRAINT users_post_pkey PRIMARY KEY (post_id, user_id),
+  CONSTRAINT users_post_pkey PRIMARY KEY (post_id,feed_id, user_id),
   viewed  BOOLEAN DEFAULT FALSE
 );
 

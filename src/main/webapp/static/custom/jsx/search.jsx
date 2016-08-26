@@ -14,7 +14,6 @@ module.exports = React.createClass({
         console.log("pattern before  ",event.target.value);
         PostStore.cleanStorage();
         PostStore.setPattern(event.target.value);
-        PostStore.getNextPage(0)
     },
 
     render: function () {

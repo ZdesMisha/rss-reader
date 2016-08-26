@@ -32,7 +32,6 @@ module.exports = React.createClass({
         var scrollHeight = document.getElementById("all-posts").scrollHeight;
         var scrollBottom = jQuery('#all-posts').scrollTop();
         var windowHeight = jQuery('#all-posts').innerHeight();
-        //
         // console.log("windowHeight ", windowHeight);
         // console.log("trueheight ", scrollHeight);
         // console.log("scrollBottom ", scrollBottom);

@@ -26,12 +26,13 @@ module.exports = Reflux.createStore({
 
 
     getNextPage: function (page) {
-        this.page = ++page;
+        this.page=page;
         return Api.fetchNextPostPage(this.feed.id, this.searchPattern, this.sortField, this.sortDir, this.page).then(function (response) {
             this.status = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
             if (this.status == 200) {
+                this.page++;
                 this.feed.posts = this.feed.posts.concat(jsonBody.posts);
                 console.log(jsonBody);
                 this.triggerChange();

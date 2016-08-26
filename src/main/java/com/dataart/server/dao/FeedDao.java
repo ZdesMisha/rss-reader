@@ -122,7 +122,7 @@ public class FeedDao {
             statement = connection.prepareStatement(
                     "SELECT post.id,post.title,post.pubdate,users_posts.viewed FROM  post " +
                             "JOIN users_posts ON (post.id=users_posts.post_id) " +
-                            "WHERE users_posts.user_id=(SELECT id FROM USERS WHERE email=?) and post.feed_id=? " +
+                            "WHERE users_posts.user_id=(SELECT id FROM USERS WHERE email=?) and users_posts.feed_id=? " +
                             "ORDER BY post." + sortField + " " + sortDir + "  " +
                             "LIMIT ? OFFSET ? ");
             statement.setString(1, sessionEmail);
@@ -169,7 +169,7 @@ public class FeedDao {
             //EXTRACT USER ID
             preparedStatement = connection.prepareStatement(
                     "SELECT id FROM users " +
-                    "WHERE email=?");
+                            "WHERE email=?");
             preparedStatement.setString(1, sessionEmail);
             result = preparedStatement.executeQuery();
             result.next();
@@ -187,21 +187,32 @@ public class FeedDao {
             preparedStatement.setString(2, title);
             preparedStatement.setString(3, link);
             result = preparedStatement.executeQuery();
-            result.next();
-            feed_id = result.getInt("id");
+            if (result.next()) {
+                feed_id = result.getInt("id");
+            } else {
+                preparedStatement = connection.prepareStatement("SELECT id from rss where link=?");
+                preparedStatement.setString(1, link);
+                result = preparedStatement.executeQuery();
+                result.next();
+                feed_id = result.getInt("id");
+            }
 
 
             //INSERT POSTS
 
-            statement = connection.createStatement();
+            query = "INSERT INTO post(title,link,description,pubDate,guid) " +
+                    "SELECT ?,?,?,?,? WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
+            preparedStatement = connection.prepareStatement(query);
             for (Post post : posts) {
-                query = "INSERT INTO post(title,link,description,pubDate,guid) " +
-                        "SELECT " + post.getGuid() + " , " + post.getTitle() + " , " + post.getTitle() + " , " + post.getDescription() + " , " + DateConverter.toSqlTimestamp(post.getPubDate())  +
-                        " WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid= " + post.getGuid() + " )";
-                statement.addBatch(query);
+                preparedStatement.setString(1, post.getTitle());
+                preparedStatement.setString(2, post.getLink());
+                preparedStatement.setString(3, post.getDescription());
+                preparedStatement.setTimestamp(4, DateConverter.toSqlTimestamp(post.getPubDate()));
+                preparedStatement.setString(5, post.getGuid());
+                preparedStatement.setString(6, post.getGuid());
                 preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
 
             //EXTRACT POSTs IDs
@@ -217,13 +228,17 @@ public class FeedDao {
             }
 
             //ASSING POSTs TO FEED
-            statement = connection.createStatement();
+            query = "INSERT INTO rss_posts(feed_id,post_id) " +
+                    "SELECT ?,? WHERE NOT EXISTS (SELECT 1 FROM rss_posts WHERE feed_id=? AND post_id=?)";
+            preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
-                query = "INSERT INTO rss_posts(feed_id,post_id) " +
-                        "VALUES (" + feed_id + "," + post_id + ")";
-                statement.addBatch(query);
+                preparedStatement.setLong(1, feed_id);
+                preparedStatement.setLong(2, post_id);
+                preparedStatement.setLong(3, feed_id);
+                preparedStatement.setLong(4, post_id);
+                preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
 
             //ASSIGN FEED TO USER //TODO if this is really needed
@@ -236,19 +251,22 @@ public class FeedDao {
 
 
             //ASSIGN POSTS TO USER
-            statement = connection.createStatement();
+            query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
+                    "VALUES (?,?,?)";
+            preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
-                query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
-                        "VALUES (" + post_id + "," + feed_id + "," + user_id + ")";
-                statement.addBatch(query);
+                preparedStatement.setLong(1, post_id);
+                preparedStatement.setLong(2, feed_id);
+                preparedStatement.setLong(3, user_id);
+                preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
             connection.commit();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-           System.out.println("Next exception "+ ex.getNextException());
+            System.out.println("Next exception " + ex.getNextException());
             throw new RuntimeException("Cannot assign feed to user. SQL exception");
         } finally {
             if (connection != null) {
@@ -284,14 +302,19 @@ public class FeedDao {
             user_id = result.getLong("id");
 
             //ADD NEW POSTS
-            statement = connection.createStatement();
+            query = "INSERT INTO post(title,link,description,pubDate,guid) " +
+                    "SELECT ?,?,?,?,? WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
+            preparedStatement = connection.prepareStatement(query);
             for (Post post : posts) {
-                query = "INSERT INTO post(title,link,description,pubDate,guid) " +
-                        "SELECT " + post.getGuid() + "," + post.getTitle() + "," + post.getLink() + "," + post.getDescription() + "," + DateConverter.toSqlTimestamp(post.getPubDate()) +
-                        "WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=" + post.getGuid() + ")";
-                statement.addBatch(query);
+                preparedStatement.setString(1, post.getTitle());
+                preparedStatement.setString(2, post.getLink());
+                preparedStatement.setString(3, post.getDescription());
+                preparedStatement.setTimestamp(4, DateConverter.toSqlTimestamp(post.getPubDate()));
+                preparedStatement.setString(5, post.getGuid());
+                preparedStatement.setString(6, post.getGuid());
+                preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
             //EXTRACT POSTs IDs
             for (Post post : posts) {
@@ -306,24 +329,33 @@ public class FeedDao {
             }
 
             //ASSING POSTs TO FEED
-            statement = connection.createStatement();
+            query = "INSERT INTO rss_posts(feed_id,post_id) " +
+                    "SELECT ?,? " +
+                    "WHERE NOT EXISTS (SELECT 1 FROM rss_posts WHERE post_id=? AND feed_id=?)";
+            preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
-                query = "INSERT INTO rss_posts(feed_id,post_id) " +
-                        "SELECT " + feed.getId() + "," + post_id +
-                        " WHERE NOT EXISTS (SELECT 1 FROM rss_posts WHERE post_id=" + post_id + " AND feed_id=" + feed.getId() + ")";
-                statement.addBatch(query);
+                preparedStatement.setLong(1, feed.getId());
+                preparedStatement.setLong(2, post_id);
+                preparedStatement.setLong(3, post_id);
+                preparedStatement.setLong(4, feed.getId());
+                preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
             //ASSIGN NEW POSTS TO USER
-            statement = connection.createStatement();
+            query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
+                    "SELECT ?,?,?" +
+                    " WHERE NOT EXISTS (SELECT 1 FROM users_posts WHERE post_id=? AND user_id=?)";
+            preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
-                query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
-                        "SELECT " + "post_id" + "," + feed.getId() + "," + user_id +
-                        " WHERE NOT EXISTS (SELECT 1 FROM users_posts WHERE post_id=" + post_id + " AND user_id=" + user_id + ")";
-                statement.addBatch(query);
+                preparedStatement.setLong(1, post_id);
+                preparedStatement.setLong(2, feed.getId());
+                preparedStatement.setLong(3, user_id);
+                preparedStatement.setLong(3, post_id);
+                preparedStatement.setLong(3, user_id);
+                preparedStatement.addBatch();
             }
-            statement.executeBatch();
+            preparedStatement.executeBatch();
 
             connection.commit();
 
@@ -338,7 +370,7 @@ public class FeedDao {
     }
 
 
-    public Feed searchByPattern(String sessionEmail, Long id, String pattern, String sortField, String sortDir, int startRow) {
+    public Feed searchByPattern(String sessionEmail, Long feedId, String pattern, String sortField, String sortDir, int startRow) {
         PreparedStatement statement;
         ResultSet result;
         long user_id;
@@ -359,12 +391,12 @@ public class FeedDao {
             user_id = result.getInt("id");
 
             //SEARCH FOR POSTS
-            statement = connection.prepareStatement("" +
-                    "SELECT post.id,post.description,post.title,post.link,post.pubdate,post.guid,post.feed_id,users_posts.viewed FROM" +
+            statement = connection.prepareStatement(
+                    "SELECT post.id,post.description,post.title,post.link,post.pubdate,post.guid,users_posts.viewed FROM" +
                     " post JOIN users_posts ON (post.id=users_posts.post_id) WHERE" +
-                    " users_posts.user_id=? and post.feed_id=? and post.title LIKE ? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ?");
+                    " users_posts.user_id=? AND users_posts.feed_id=? AND post.title LIKE ? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ?");
             statement.setLong(1, user_id);
-            statement.setLong(2, id);
+            statement.setLong(2, feedId);
             statement.setString(3, "%" + pattern + "%");
             statement.setInt(4, PAGE_SIZE);
             statement.setInt(5, startRow);

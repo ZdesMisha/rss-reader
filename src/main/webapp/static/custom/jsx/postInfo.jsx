@@ -21,6 +21,7 @@ module.exports = React.createClass({
 
         if (jQuery.isEmptyObject(this.state.post)) {
             return ( <div className="col-md-6 main-black">
+                <p className="empty-list">Click on post to see detailed info</p>
             </div>);
         } else {
             return ( <div className="col-md-6 main-black">

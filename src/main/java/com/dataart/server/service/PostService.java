@@ -6,16 +6,16 @@ import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import java.sql.SQLException;
 
 /**
  * Created by misha on 25.08.16.
  */
-@Singleton
 @Stateless
 public class PostService {
 
-    @InjectParam
+    @Inject
     private PostDao postDao;
 
     public void setViewed(Long id) {

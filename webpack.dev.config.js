@@ -6,7 +6,7 @@ module.exports = {
 	entry: [
 		'webpack-dev-server/client?http://0.0.0.0:3000', // WebpackDevServer host and port
 		'webpack/hot/only-dev-server',
-		'./src/main/webapp/static/custom/jsx/app.jsx'
+		'./src/main/webapp/static/custom/jsx/dashboard/app.jsx'
 	],
 	devtool: process.env.WEBPACK_DEVTOOL || 'source-map',
 	output: {

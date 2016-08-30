@@ -16,7 +16,6 @@ import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 /**
  * Created by misha on 25.08.16.
  */
-@Singleton
 @Stateless
 public class PostDao {
 

@@ -1,7 +1,7 @@
 /**
  * Created by misha on 09.06.16.
  */
-var Api = require('../rest/api');
+import Api from '../rest/api';
 var Reflux = require('reflux');
 var Actions = require('../action/actions');
 
@@ -14,9 +14,9 @@ module.exports = Reflux.createStore({
 
     viewedFeed: {},
 
-    init(){
-        this.getNextPage(this.feedStorage.page);
-    },
+    // init(){
+    //     this.getNextPage(this.feedStorage.page);
+    // },
 
     setViewedFeed: function (feed) {
         this.viewedFeed = feed;

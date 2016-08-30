@@ -2,15 +2,15 @@ import React from 'react';
 import Fetch from 'whatwg-fetch';
 
 
-const SERVER_HOST = __SERVER_HOST__;
-var feedsUrl = SERVER_HOST + 'rest/feed/list/';
-var addFeedUrl = SERVER_HOST + 'rest/feed/add';
-var postsUrl = SERVER_HOST + 'rest/feed';
-var deleteFeedUrl = SERVER_HOST + 'rest/feed/delete/';
-var setViewedUrl = __SERVER_HOST__ + 'rest/feed/post/';
-var refreshFeedUrl = __SERVER_HOST__ + 'rest/feed/refresh';
-var refreshFeedListUrl = __SERVER_HOST__ + 'rest/feed/refreshList/';
-var getPostUrl = __SERVER_HOST__ + 'rest/feed/post/';
+const SERVER_HOST = __SERVER_HOST__ + '/rest/secured/';
+const feedsUrl = SERVER_HOST + 'feed/list/';
+const addFeedUrl = SERVER_HOST + 'feed/add';
+const postsUrl = SERVER_HOST + 'feed';
+const deleteFeedUrl = SERVER_HOST + 'feed/delete/';
+const setViewedUrl = __SERVER_HOST__ + 'feed/post/';
+const refreshFeedUrl = __SERVER_HOST__ + 'feed/refresh';
+const refreshFeedListUrl = __SERVER_HOST__ + 'feed/refreshList/';
+const getPostUrl = __SERVER_HOST__ + 'feed/post/';
 
 module.exports = {
 
@@ -21,7 +21,8 @@ module.exports = {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {
@@ -35,7 +36,8 @@ module.exports = {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {
@@ -50,7 +52,8 @@ module.exports = {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {
@@ -63,7 +66,8 @@ module.exports = {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify(feed)
         }).then(function (response) {
@@ -76,7 +80,8 @@ module.exports = {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         }).then(function (response) {
             return response;
@@ -100,7 +105,8 @@ module.exports = {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {
@@ -115,7 +121,8 @@ module.exports = {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {
@@ -129,7 +136,8 @@ module.exports = {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             }
         })
             .then(function (response) {

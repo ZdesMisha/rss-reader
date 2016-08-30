@@ -4,7 +4,9 @@ package com.dataart.server.json.entity;
 /**
  * Created by misha on 15.08.16.
  */
-public class FeedJson {
+public class RssLink {
+
+    private String link;
 
     public String getLink() {
         return link;
@@ -14,12 +16,10 @@ public class FeedJson {
         this.link = link;
     }
 
-    private String link;
-
     @Override
     public String
     toString() {
-        return "FeedJson{" +
+        return "RssLink{" +
                 "link='" + link + '\'' +
                 '}';
     }

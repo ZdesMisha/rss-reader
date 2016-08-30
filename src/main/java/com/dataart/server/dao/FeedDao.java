@@ -4,20 +4,18 @@ import com.dataart.server.DataSourceConfiguration;
 import com.dataart.server.persistence.Feed;
 import com.dataart.server.persistence.Post;
 import com.dataart.server.utils.DateConverter;
-import com.sun.jersey.spi.resource.Singleton;
 
 import javax.ejb.Stateless;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dataart.server.utils.Pager.PAGE_SIZE;
+import static com.dataart.server.utils.PaginationUtils.PAGE_SIZE;
 import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
 /**
  * Created by misha on 09.08.16.
  */
-@Singleton
 @Stateless
 public class FeedDao {
 
@@ -90,14 +88,14 @@ public class FeedDao {
                         result.getString("link")));
             }
             return list;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot find all feeds");
+        } catch (SQLException ex) {
+            throw new RuntimeException("Unable to fetch feed page." +
+                    "Error Message: " + ex.getMessage());
         }
     }
 
 
-    public Feed getSingle(String sessionEmail, Long feedId, String sortField, String sortDir, int startRow) {
+    public Feed getSingle(String sessionEmail, Long feedId, String sortField, String sortDir, int startRow) throws SQLException {
 
         PreparedStatement statement;
         ResultSet result;
@@ -140,9 +138,6 @@ public class FeedDao {
             feed.setPosts(list);
             return feed;
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot find rss feed");
         }
     }
 
@@ -393,8 +388,8 @@ public class FeedDao {
             //SEARCH FOR POSTS
             statement = connection.prepareStatement(
                     "SELECT post.id,post.description,post.title,post.link,post.pubdate,post.guid,users_posts.viewed FROM" +
-                    " post JOIN users_posts ON (post.id=users_posts.post_id) WHERE" +
-                    " users_posts.user_id=? AND users_posts.feed_id=? AND post.title LIKE ? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ?");
+                            " post JOIN users_posts ON (post.id=users_posts.post_id) WHERE" +
+                            " users_posts.user_id=? AND users_posts.feed_id=? AND post.title LIKE ? ORDER BY post." + sortField + " " + sortDir + "  LIMIT ? OFFSET ?");
             statement.setLong(1, user_id);
             statement.setLong(2, feedId);
             statement.setString(3, "%" + pattern + "%");

@@ -1,7 +1,7 @@
 /**
  * Created by misha on 09.06.16.
  */
-var Api = require('../rest/api');
+import Api from '../rest/api';
 var Reflux = require('reflux');
 var Actions = require('../action/actions');
 var FeedStore = require('./feedStore');

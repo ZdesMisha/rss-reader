@@ -1,8 +1,8 @@
-body {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #eee;
-}
+/*.form-body {*/
+    /*padding-top: 40px;*/
+    /*padding-bottom: 40px;*/
+    /*background-color: #eee;*/
+/*}*/
 
 .form-signin {
     max-width: 330px;
@@ -33,8 +33,22 @@ body {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
-.form-signin input[type="password"] {
+.form-login input[type="password"] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+.form-register input[type="password"] {
+    border-radius: 0;
+}
+
+.form-register-confirm{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.single-btn{
+    padding: 0;
 }

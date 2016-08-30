@@ -3,7 +3,7 @@ package com.dataart.server.utils;
 /**
  * Created by misha on 19.08.16.
  */
-public class Pager {
+public class PaginationUtils {
 
     public static final int PAGE_SIZE=20;
 

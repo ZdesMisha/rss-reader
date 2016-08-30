@@ -25,8 +25,12 @@ module.exports = React.createClass({
         }
     },
 
+    componentDidMount: function() {
+      this.getFeeds(0);
+    },
+
     getFeeds: function (page) {
-        FeedStore.getFeeds(page)
+        FeedStore.getNextPage(page)
     },
     getNextPage: function () {
         var scrollHeight = document.getElementById("all-feeds").scrollHeight;

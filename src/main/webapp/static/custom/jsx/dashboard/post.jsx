@@ -1,6 +1,6 @@
 import React from 'react';
-import SinglePostStore from './store/singlePostStore';
-import PostStore from './store/postStore';
+import SinglePostActions from './action/single-post-actions';
+import PostActions from './action/post-actions';
 
 module.exports = React.createClass({
 
@@ -22,9 +22,10 @@ module.exports = React.createClass({
     setViewed: function(){
         if(!this.props.isViewed){
             this.setState({style:{'background-color': '#a7d0f2'}})
-            PostStore.setViewed(this.props.id)
+            PostActions.setViewed(this.props.id)
         }
-        PostStore.setViewedPost(this.props.id)
+        PostActions.changeViewedPost(this.props.id);
+        SinglePostActions.showPost();
     },
 
     render: function(){

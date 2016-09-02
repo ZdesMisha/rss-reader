@@ -1,5 +1,5 @@
 import React from 'react';
-import UserStore from '../store/userStore';
+import UserStore from '../store/user-store';
 
 
 module.exports = React.createClass({

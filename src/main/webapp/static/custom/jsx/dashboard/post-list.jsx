@@ -1,15 +1,15 @@
 import React from 'react';
 import Post from './post';
 import Reflux from 'reflux';
-import PostStore from './store/postStore';
-import FeedStore from './store/feedStore';
-import SortingPanel from './sortingPanel'
+import PostActions from './action/post-actions';
+import PostStore from './store/post-store';
+import SortingPanel from './post-control-bar'
 
 
 module.exports = React.createClass({
 
     mixins: [
-        Reflux.listenTo(PostStore, 'onChange'),
+        Reflux.listenTo(PostStore, 'onChange')
     ],
 
     isRequesting: false,
@@ -32,7 +32,7 @@ module.exports = React.createClass({
                 return;
             }
             this.isRequesting = true;
-            PostStore.getNextPage()
+            PostActions.getNextPage()
         }
 
     },

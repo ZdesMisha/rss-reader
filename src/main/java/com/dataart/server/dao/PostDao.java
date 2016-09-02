@@ -3,8 +3,6 @@ package com.dataart.server.dao;
 import com.dataart.server.DataSourceConfiguration;
 import com.dataart.server.persistence.Post;
 import com.dataart.server.utils.DateConverter;
-import com.sun.jersey.spi.resource.Singleton;
-
 import javax.ejb.Stateless;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

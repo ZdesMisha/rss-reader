@@ -10,6 +10,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 public class JsonUtils {
 
     private static final String ERROR_TEMPLATE = "{\"error\":\"%s\"}";
+    private static final String TOKEN_TEMPLATE = "{\"token\":\"%s\"}";
+    private static final String EMPTY_TEMPLATE = "{}";
 
     public static Response buildResponse(Object object, int status) {
         ResponseBuilder builder = Response.status(status).type(MediaType.APPLICATION_JSON).entity(object);
@@ -20,4 +22,16 @@ public class JsonUtils {
         ResponseBuilder builder = Response.status(status).type(MediaType.APPLICATION_JSON).entity(String.format(ERROR_TEMPLATE, error));
         return builder.build();
     }
+
+    public static Response buildTokenResponse(String token, int status) {
+        ResponseBuilder builder = Response.status(status).type(MediaType.APPLICATION_JSON).entity(String.format(TOKEN_TEMPLATE, token));
+        return builder.build();
+    }
+
+    public static Response buildEmptySuccessResponse(int status) {
+        ResponseBuilder builder = Response.status(status).type(MediaType.APPLICATION_JSON).entity(EMPTY_TEMPLATE);
+        return builder.build();
+    }
+
+
 }

@@ -1,12 +1,13 @@
 package com.dataart.server.service;
 
+import com.dataart.server.authenticaion.AuthProvider;
 import com.dataart.server.dao.FeedDao;
 import com.dataart.server.exception.ServiceException;
 import com.dataart.server.json.entity.RssLink;
 import com.dataart.server.persistence.Feed;
 import com.dataart.server.xml.RssReader;
 
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,7 +18,7 @@ import static com.dataart.server.utils.PaginationUtils.*;
 /**
  * Created by misha on 09.08.16.
  */
-@Stateless
+@Singleton
 public class FeedService {
 
     @Inject
@@ -25,6 +26,9 @@ public class FeedService {
 
     @Inject
     private RssReader rssReader;
+
+    @Inject
+    private AuthProvider authProvider;
 
 
     public List<Feed> getPage(int page) {

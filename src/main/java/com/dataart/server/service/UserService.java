@@ -2,7 +2,6 @@ package com.dataart.server.service;
 
 import com.dataart.server.dao.UserDao;
 import com.dataart.server.persistence.User;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 

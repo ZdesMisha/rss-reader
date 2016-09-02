@@ -1,8 +1,7 @@
-package com.dataart.server.authenticaion.filter;
+package com.dataart.server.filter;
 
 import com.dataart.server.authenticaion.AuthProvider;
-import com.dataart.server.authenticaion.Credentials;
-import com.sun.jersey.api.core.InjectParam;
+import com.dataart.server.authenticaion.UserPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.inject.Inject;
@@ -10,15 +9,14 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
  * Created by misha on 29.08.16.
  */
-@WebFilter("/LoginFilter")
-public class LoginFilter implements Filter {
+@WebFilter("/LoggingFilter")
+public class LoggingFilter implements Filter {
 
     @Inject
     private AuthProvider authProvider;
@@ -42,18 +40,17 @@ public class LoginFilter implements Filter {
                 sb.append(line);
             }
             ObjectMapper mapper = new ObjectMapper();
-            Credentials credentials = mapper.readValue(sb.toString(), Credentials.class);
+            UserPrincipal principal = mapper.readValue(sb.toString(), UserPrincipal.class);
 
-            String token = authProvider.login(credentials);
-            httpResponse.setHeader(HttpHeaders.AUTHORIZATION, token);
+            authProvider.attemptAuthentication(principal);
+            String token = authProvider.prepareToken(principal);
+
             httpResponse.setStatus(200);
-            httpResponse.getWriter().print("{\n" +
-                    "\"messages\":\"Login success\",\n" +
-                    "}");
+            httpResponse.getWriter().print("{\"token\":\"" + token + "\"}");
+
         } catch (Exception e) {
             e.printStackTrace();
             httpResponse.sendError(401);
-
         }
     }
 

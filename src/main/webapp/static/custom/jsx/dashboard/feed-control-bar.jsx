@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FeedStore from './store/feedStore';
 import {Modal} from 'react-bootstrap';
 import {FormGroup} from 'react-bootstrap';
 import {ControlLabel} from 'react-bootstrap';
@@ -8,6 +7,9 @@ import {FormControl} from 'react-bootstrap';
 import {Button} from 'react-bootstrap';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
+import FeedActions from './action/feed-actions';
+import PostActions from './action/post-actions';
+
 
 
 module.exports = React.createClass({
@@ -55,14 +57,17 @@ module.exports = React.createClass({
         this.setState({value: e.target.value});
     },
 
-    onSubmitBtnClick: function () {
+    onAddBtnClick: function () {
         var feed = {};
         feed['link'] = this.state.value;
-        FeedStore.addFeed(feed)
+        FeedActions.addFeed(feed);
+        FeedActions.refreshFeedList();
     },
 
     onRefreshBtnClick: function () {
-        FeedStore.refreshFeeds();
+        FeedActions.refreshFeeds();
+        PostActions.cleanPostList();
+        PostActions.getNextPage()
     },
 
     render: function () {
@@ -105,7 +110,7 @@ module.exports = React.createClass({
                             />
                             <FormControl.Feedback />
                         </FormGroup>
-                        <Button onClick={this.onSubmitBtnClick}>
+                        <Button onClick={this.onAddBtnClick}>
                             Submit
                         </Button>
                     </form>

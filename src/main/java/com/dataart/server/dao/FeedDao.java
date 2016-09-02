@@ -4,7 +4,6 @@ import com.dataart.server.DataSourceConfiguration;
 import com.dataart.server.persistence.Feed;
 import com.dataart.server.persistence.Post;
 import com.dataart.server.utils.DateConverter;
-
 import javax.ejb.Stateless;
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,11 +48,12 @@ public class FeedDao {
             statement = connection.prepareStatement(
                     "SELECT * FROM rss " +
                             "WHERE id IN (SELECT rss_id FROM users_rss WHERE user_id=(SELECT id FROM users WHERE email=?)) " +
-                            "OFFSET ?");
+                            "LIMIT ?");
             statement.setString(1, sessionEmail);
-            statement.setInt(2, PAGE_SIZE * pages);
+            statement.setInt(2, PAGE_SIZE * (pages+1));
             result = statement.executeQuery();
             while (result.next()) {
+                System.out.println("Feed!!!");
                 list.add(new Feed(
                         result.getLong("id"),
                         result.getString("title"),

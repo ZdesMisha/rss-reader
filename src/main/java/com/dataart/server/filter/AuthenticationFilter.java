@@ -1,7 +1,6 @@
-package com.dataart.server.authenticaion.filter;
+package com.dataart.server.filter;
 
 import com.dataart.server.authenticaion.AuthProvider;
-import com.sun.jersey.api.core.InjectParam;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -12,10 +11,10 @@ import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 /**
- * Created by misha on 29.08.16.
+ * Created by misha on 26.08.16.
  */
-@WebFilter("/LogoutFilter")
-public class LogoutFilter implements Filter {
+@WebFilter("/AuthenticationFilter")
+public class AuthenticationFilter implements Filter {
 
     @Inject
     private AuthProvider authProvider;
@@ -26,28 +25,21 @@ public class LogoutFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println(" Logout Filter start");
+
+        System.out.println(" Authentication Filter start");
+
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-
-        String auth = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (auth == null) {
-            throw new RuntimeException("Authorization header must be provided");
-        }
-
-        String token = auth.trim();
+        String token = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         try {
 
-            authProvider.logout(token);
-            httpResponse.setStatus(200);
-            httpResponse.getWriter().print("{\n" +
-                    "\"messages\":\"Logout success\",\n" +
-                    "}");
+            authProvider.validateToken(token);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            filterChain.doFilter(servletRequest, servletResponse);
+
+        } catch (Exception e) {
+            e.printStackTrace();
             httpResponse.sendError(401);
         }
     }
@@ -56,3 +48,6 @@ public class LogoutFilter implements Filter {
     public void destroy() {
     }
 }
+
+
+

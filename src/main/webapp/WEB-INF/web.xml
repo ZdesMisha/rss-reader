@@ -6,31 +6,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-
-    <servlet>
-        <servlet-name>Jersey Servlet</servlet-name>
-        <servlet-class>
-            com.sun.jersey.spi.container.servlet.ServletContainer
-        </servlet-class>
-        <init-param>
-            <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>com.dataart.server.resource</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>Jersey Servlet</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
-
     <filter>
         <filter-name>AuthFilter</filter-name>
-        <filter-class>com.dataart.server.authenticaion.filter.AuthFilter</filter-class>
+        <filter-class>com.dataart.server.filter.AuthenticationFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -40,7 +18,7 @@
 
     <filter>
         <filter-name>LoginFilter</filter-name>
-        <filter-class>com.dataart.server.authenticaion.filter.LoginFilter</filter-class>
+        <filter-class>com.dataart.server.filter.LoggingFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -50,7 +28,7 @@
 
     <filter>
         <filter-name>LogoutFilter</filter-name>
-        <filter-class>com.dataart.server.authenticaion.filter.LogoutFilter</filter-class>
+        <filter-class>com.dataart.server.filter.LogoutFilter</filter-class>
     </filter>
 
     <filter-mapping>

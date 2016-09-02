@@ -1,7 +1,6 @@
 import React from 'react';
 import Reflux from 'reflux';
-import SinglePostStore from './store/singlePostStore';
-import PostStore from './store/postStore';
+import SinglePostStore from './store/single-post-store';
 import jQuery from 'jquery';
 
 

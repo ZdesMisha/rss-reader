@@ -2,9 +2,6 @@ package com.dataart.server.service;
 
 import com.dataart.server.dao.PostDao;
 import com.dataart.server.persistence.Post;
-import com.sun.jersey.api.core.InjectParam;
-import com.sun.jersey.spi.resource.Singleton;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.sql.SQLException;

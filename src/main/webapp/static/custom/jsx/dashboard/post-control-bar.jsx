@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
-import PostStore from './store/postStore';
+import PostActions from './action/post-actions';
 
 
 
@@ -32,11 +32,13 @@ module.exports = React.createClass({
     },
 
     onSortDesc() {
-        PostStore.setSortDirection('desc');
+        PostActions.setSortDirection('desc');
+        PostActions.getNextPage();
     },
 
     onSortAsc: function () {
-        PostStore.setSortDirection('asc');
+        PostActions.setSortDirection('asc');
+        PostActions.getNextPage();
     },
 
     render: function () {

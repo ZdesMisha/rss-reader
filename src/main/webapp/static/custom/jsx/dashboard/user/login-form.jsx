@@ -1,6 +1,8 @@
 import React from 'react';
 import jQuery from 'jquery';
-import UserStore from '../store/userStore';
+import UserStore from '../store/user-store';
+import {Alert} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 
 
 module.exports = React.createClass({
@@ -14,11 +16,18 @@ module.exports = React.createClass({
             json[n['name']] = n['value'];
         });
         console.log(json);
-        UserStore.login(json);
+        UserStore.login(json).then(function (result) {
+            console.log('errorrrrrrr');
+            jQuery('#alert').show();
+        }.bind(this));
     },
 
-    switchToRegistration: function() {
-      UserStore.switchToRegistration();
+    switchToRegistration: function () {
+        UserStore.switchToRegistration();
+    },
+
+    hideAlert: function () {
+        jQuery('#alert').hide();
     },
 
     render: function () {
@@ -32,7 +41,14 @@ module.exports = React.createClass({
                 <input type="password" id="login-pass" className="form-control" placeholder="Password" name="password"/>
             </form>
             <button onClick={this.login} className="btn btn-lg btn-primary btn-block form-signin">Log in</button>
-            <button onClick={this.switchToRegistration} className="btn btn-lg btn-primary btn-block form-signin" >Registration</button>
+            <button onClick={this.switchToRegistration} className="btn btn-lg btn-primary btn-block form-signin">
+                Registration
+            </button>
+            <div className="alert alert-danger" id="alert" hidden="hidden">
+                <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={this.hideAlert}>&times;</a>
+                <span className="sr-only">Error:</span>
+                ERROR OCCURRED
+            </div>
 
         </div>
     }

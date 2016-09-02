@@ -1,19 +1,28 @@
 package com.dataart.server.authenticaion;
 
+import java.security.Principal;
+
 /**
  * Created by misha on 29.08.16.
  */
-public class Credentials {
+public class UserPrincipal implements Principal {
 
     private String email;
     private String password;
 
-    public Credentials(){
-
+    public UserPrincipal(){
     }
 
-    public Credentials(String password, String email) {
+    public UserPrincipal(String password, String email) {
         this.password = password;
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -25,12 +34,9 @@ public class Credentials {
         this.password = password;
     }
 
-    public String getEmail() {
+
+    @Override
+    public String getName() {
         return email;
     }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
 }

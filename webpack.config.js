@@ -4,7 +4,7 @@ var loaders = require('./webpack.loaders');
 
 module.exports = {
     entry: [
-        './src/main/webapp/static/custom/jsx/dashboard/app.jsx'
+        './src/main/webapp/static/custom/jsx/dashboard/main.jsx'
     ],
     output: {
         path: path.join(__dirname, 'src/main/webapp'),

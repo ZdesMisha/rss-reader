@@ -1,9 +1,10 @@
 import React from 'react';
 import Feed from './feed';
 import Reflux from 'reflux';
-import FeedStore from './store/feedStore';
+import FeedActions from './action/feed-actions';
+import FeedStore from './store/feed-store';
 import jQuery from 'jquery';
-import ControlPanel from './controlPanel';
+import ControlPanel from './feed-control-bar';
 
 
 module.exports = React.createClass({
@@ -12,26 +13,18 @@ module.exports = React.createClass({
         Reflux.listenTo(FeedStore, 'onChange')
     ],
 
-    isolate: {
-        pageNo: 0,
-        isRequesting: false,
-        totalPages: 0
-    },
+    isRequesting: false,
 
     getInitialState: function () {
         return {
-            feeds: [],
-            totalPages: 5 //todo something with it
+            feeds: []
         }
     },
 
-    componentDidMount: function() {
-      this.getFeeds(0);
+    componentDidMount: function () {
+        FeedActions.getNextPage()
     },
 
-    getFeeds: function (page) {
-        FeedStore.getNextPage(page)
-    },
     getNextPage: function () {
         var scrollHeight = document.getElementById("all-feeds").scrollHeight;
         var scrollBottom = jQuery('#all-feeds').scrollTop();
@@ -44,8 +37,8 @@ module.exports = React.createClass({
             if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
                 return;
             }
-            this.isolate.isRequesting = true;
-            this.getFeeds(this.isolate.pageNo++)
+            this.isRequesting = true;
+            FeedActions.getNextPage()
         }
 
     },
@@ -69,7 +62,7 @@ module.exports = React.createClass({
     },
 
     onChange: function (event, feeds) {
-        this.isolate.isRequesting = false;
+        this.isRequesting = true;
         this.setState({
             feeds: feeds
         });

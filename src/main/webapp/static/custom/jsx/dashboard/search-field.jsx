@@ -1,6 +1,5 @@
 import React from 'react';
-import PostStore from './store/postStore';
-var Actions = require('./action/actions');
+var PostActions = require('./action/post-actions');
 
 
 module.exports = React.createClass({
@@ -11,8 +10,8 @@ module.exports = React.createClass({
 
     handleChange: function (event) {
         this.setState({value: event.target.value});
-        PostStore.cleanStorage();
-        PostStore.setSearchPattern(event.target.value);
+        PostActions.setSearchPattern(event.target.value);
+        PostActions.getNextPage();
     },
 
     render: function () {

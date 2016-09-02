@@ -1,15 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom'
-import FeedStore from './store/feedStore';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
+import React from 'react';
+import ReactDOM from 'react-dom'
+import FeedActions from './action/feed-actions';
+import PostActions from './action/post-actions';
 
 
 module.exports = React.createClass({
 
     getInitialState() {
         return {
-            showTooltip: false,
+            showTooltip: false
         };
     },
 
@@ -22,16 +23,17 @@ module.exports = React.createClass({
     },
 
     onLinkClick: function () {
-        console.log("Clicked Link", this.props.id);
-        FeedStore.setViewedFeed({
+        FeedActions.changeViewedFeed({
             id: this.props.id,
             title: this.props.title
         });
+        PostActions.getNextPage();
     },
 
     onDeleteClick: function () {
-        console.log("Clicked delete btn", this.props.id);
-        FeedStore.deleteFeed(this.props.id);
+        FeedActions.deleteFeed(this.props.id);
+        FeedActions.refreshFeedList();
+        PostActions.cleanPostList();
     },
 
     render: function () {
@@ -40,7 +42,7 @@ module.exports = React.createClass({
             container: this,
             target: () => ReactDOM.findDOMNode(this.refs.deleteBtn)
         };
-        return (<div className="feed-item" >
+        return (<div className="feed-item">
            <span className="feed-title">
                 <a onClick={this.onLinkClick}>{this.props.title}</a>
                <button ref="deleteBtn" onMouseEnter={this.toggle} onMouseOut={this.hide} onClick={this.onDeleteClick}

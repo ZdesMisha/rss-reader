@@ -1,7 +1,6 @@
-package com.dataart.server.authenticaion.filter;
+package com.dataart.server.filter;
 
 import com.dataart.server.authenticaion.AuthProvider;
-import com.sun.jersey.api.core.InjectParam;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -12,10 +11,10 @@ import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 /**
- * Created by misha on 26.08.16.
+ * Created by misha on 29.08.16.
  */
-@WebFilter("/AuthFilter")
-public class AuthFilter implements Filter {
+@WebFilter("/LogoutFilter")
+public class LogoutFilter implements Filter {
 
     @Inject
     private AuthProvider authProvider;
@@ -26,23 +25,18 @@ public class AuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println(" Auth Filter start");
+        System.out.println("Logout Filter start");
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String auth = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (auth == null) {
-            throw new RuntimeException("Authorization header must be provided");
-        }
-
-        String token = auth.trim();
+        String token = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         try {
 
-            validateToken(token);
+            authProvider.removeToken(token);
+            httpResponse.setStatus(200);
+            httpResponse.getWriter().print("{}");
 
-            filterChain.doFilter(servletRequest, servletResponse);
         } catch (Exception e) {
             e.printStackTrace();
             httpResponse.sendError(401);
@@ -52,13 +46,4 @@ public class AuthFilter implements Filter {
     @Override
     public void destroy() {
     }
-
-    private void validateToken(String token) throws Exception {
-        if (!authProvider.isAuthenticated(token)) {
-            throw new RuntimeException("token is invalid");
-        }
-    }
 }
-
-
-

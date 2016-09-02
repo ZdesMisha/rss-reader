@@ -6,7 +6,7 @@ gulp.task('hello', function() {
 });
 
 gulp.task('pack', function() {
-    return gulp.src('./src/main/webapp/static/custom/jsx/app.jsx')
+    return gulp.src('./src/main/webapp/static/custom/jsx/main.jsx')
         .pipe(webpack( require('./webpack.config.js') ))
         .pipe(gulp.dest('./src/main/webapp/static/custom/js/'));
 });

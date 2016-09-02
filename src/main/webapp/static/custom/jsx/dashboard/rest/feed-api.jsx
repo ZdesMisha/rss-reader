@@ -2,20 +2,21 @@ import React from 'react';
 import Fetch from 'whatwg-fetch';
 
 
-const SERVER_HOST = __SERVER_HOST__ + '/rest/secured/';
-const feedsUrl = SERVER_HOST + 'feed/list/';
-const addFeedUrl = SERVER_HOST + 'feed/add';
-const postsUrl = SERVER_HOST + 'feed';
-const deleteFeedUrl = SERVER_HOST + 'feed/delete/';
-const setViewedUrl = __SERVER_HOST__ + 'feed/post/';
-const refreshFeedUrl = __SERVER_HOST__ + 'feed/refresh';
-const refreshFeedListUrl = __SERVER_HOST__ + 'feed/refreshList/';
-const getPostUrl = __SERVER_HOST__ + 'feed/post/';
+const SERVER_HOST = __SERVER_HOST__ + 'rest/secured/';
+const feedsUrl = SERVER_HOST + 'feeds/page/';
+const addFeedUrl = SERVER_HOST + 'feeds/add';
+const postsUrl = SERVER_HOST + 'feeds';
+const deleteFeedUrl = SERVER_HOST + 'feeds/delete/';
+const setViewedUrl = SERVER_HOST + 'feeds/post/';
+const refreshFeedUrl = SERVER_HOST + 'feeds/refresh';
+const refreshFeedListUrl = SERVER_HOST + 'feeds/pages/';
+const getPostUrl = SERVER_HOST + 'feeds/post/';
 
 module.exports = {
 
 //------------------FEED API-------------------------
     fetchNextFeedPage: function (page) {
+        console.log(localStorage.getItem('token'));
         return fetch(feedsUrl + page, {
             credentials: "include",
             method: 'GET',
@@ -116,6 +117,7 @@ module.exports = {
 
 
     setPostViewed: function (id) {
+        console.log(localStorage.getItem('token'));
         return fetch(setViewedUrl + id, {
             credentials: "include",
             method: 'PUT',

@@ -1,6 +1,5 @@
 package com.dataart.server.xml;
 
-import com.dataart.server.exception.ServiceException;
 import com.dataart.server.persistence.Feed;
 import com.dataart.server.persistence.Post;
 import com.dataart.server.utils.DateConverter;
@@ -17,9 +16,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by misha on 11.08.16.
- */
 @Stateless
 public class RssReader {
 

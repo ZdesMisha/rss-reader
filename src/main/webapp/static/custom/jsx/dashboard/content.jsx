@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import Dashboard from './dashboard';
-import LoginForm from './user/loginForm';
-import RegistrationForm from './user/registrationForm';
-import UserStore from './store/userStore';
+import LoginForm from './user/login-form';
+import RegistrationForm from './user/registration-form';
+import UserStore from './store/user-store';
 var Reflux = require('reflux');
 
 
@@ -18,7 +18,11 @@ module.exports = React.createClass({
     getInitialState: function() {
       return {
           state:'login'
-      }  
+      }
+    },
+    
+    componentDidMount: function() {
+      UserStore.statusRequest();
     },
     
     renderLoginForm: function() {
@@ -35,7 +39,7 @@ module.exports = React.createClass({
 
     render: function () {
         switch (this.state.state) {
-            case 'logged':
+            case 'dashboard':
                 return this.renderDashboard();
                 break;
             case 'login':

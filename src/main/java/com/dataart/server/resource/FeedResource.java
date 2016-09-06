@@ -1,6 +1,5 @@
 package com.dataart.server.resource;
 
-import com.dataart.server.exception.handler.ServiceExceptionHandler;
 import com.dataart.server.utils.JsonBuilder;
 import com.dataart.server.json.entity.RssLink;
 import com.dataart.server.domain.Feed;
@@ -24,7 +23,6 @@ public class FeedResource {
 
     @Inject
     private FeedService feedService;
-
 
     @GET
     @Path("/page/{page}")

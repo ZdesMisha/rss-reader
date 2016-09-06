@@ -23,7 +23,7 @@ public class JsonBuilder {
         return builder.build();
     }
     public static Response buildInternalServerErrorResponse() {
-        ResponseBuilder builder = Response.status(500).type(MediaType.APPLICATION_JSON).entity(String.format(ERROR_TEMPLATE, "Unexpected server error occurred"));
+        ResponseBuilder builder = Response.status(500).type(MediaType.APPLICATION_JSON).entity(String.format(ERROR_TEMPLATE, "UNEXCPECTED SERVER ERROR OCCURRED"));
         return builder.build();
     }
 

@@ -11,7 +11,6 @@ import com.dataart.server.service.UserService;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -28,15 +27,21 @@ public class UserResource {
     @Inject
     private UserService userService;
 
+    @Inject
+    private ServiceExceptionHandler exceptionHandler;
+
     @POST
     @Consumes("application/json")
-    public Response register(@Valid RegistrationUser registrationUser) throws Exception {
-        System.out.println("CREATE USER " + registrationUser);
-        if (!registrationUser.getPassword().equals(registrationUser.getConfirmedPassword())) {
-            throw new RuntimeException("PASSWORDS ARE NOT EQUAL");
+    public Response register(@Valid RegistrationUser registrationUser){
+        try {
+            if (!registrationUser.getPassword().equals(registrationUser.getConfirmedPassword())) {
+                return JsonBuilder.buildServiceErrorResponse("PASSWORDS ARE NOT EQUAL", 400);
+            }
+            userService.create(registrationUser);
+            return JsonBuilder.buildEmptySuccessResponse(200);
+        } catch (Exception ex) {
+            return exceptionHandler.handle(ex);
         }
-        userService.create(registrationUser);
-        return JsonBuilder.buildEmptySuccessResponse(200);
     }
 
 

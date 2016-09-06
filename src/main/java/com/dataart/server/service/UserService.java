@@ -2,6 +2,7 @@ package com.dataart.server.service;
 
 import com.dataart.server.dao.UserDao;
 import com.dataart.server.domain.User;
+import com.dataart.server.exception.ServiceException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -18,22 +19,21 @@ public class UserService {
     @Inject
     private UserDao userDao;
 
-    public void create(User user) {
+    public void create(User user) throws Exception {
         if (isExists(user.getEmail())) {
-            throw new RuntimeException("USER WITH SUCH EMAIL IS ALREADY EXISTS");
+            throw new ServiceException("USER WITH SUCH EMAIL IS ALREADY EXISTS");
         } else {
             user.setPassword(cryptWithMD5(user.getPassword()));
             userDao.create(user);
         }
     }
 
-    private boolean isExists(String email) {
+    private boolean isExists(String email) throws Exception {
         return userDao.find(email) != null;
     }
 
-    public boolean isValid(String email, String password) {
+    public boolean isValid(String email, String password) throws Exception {
         User user = userDao.find(email);
-
         return (user != null && user.getEmail().equals(email) && user.getPassword().equals(cryptWithMD5(password)));
     }
 }

@@ -28,12 +28,12 @@ module.exports = Reflux.createStore({
                     this.page++;
                     this.feedStore.feeds = this.feedStore.feeds.concat(jsonBody);
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -48,12 +48,12 @@ module.exports = Reflux.createStore({
                     if (id == this.viewedFeed.id) {
                         this.changeViewedFeed({});
                     }
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -65,12 +65,12 @@ module.exports = Reflux.createStore({
         }.bind(this)).then(function (jsonBody) {
             switch (this.responseStatus) {
                 case 200:
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -85,12 +85,12 @@ module.exports = Reflux.createStore({
                 case 200:
                     this.feedStore.feeds = jsonBody;
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -103,12 +103,12 @@ module.exports = Reflux.createStore({
             switch (this.responseStatus) {
                 case 200:
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },

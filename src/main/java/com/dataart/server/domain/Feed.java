@@ -1,4 +1,4 @@
-package com.dataart.server.persistence;
+package com.dataart.server.domain;
 
 
 import java.util.List;

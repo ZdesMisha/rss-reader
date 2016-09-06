@@ -1,9 +1,12 @@
 package com.dataart.server.dao;
 
-import com.dataart.server.DataSourceConfiguration;
-import com.dataart.server.persistence.Post;
+import com.dataart.server.domain.Post;
 import com.dataart.server.utils.DateConverter;
+import com.dataart.server.utils.IOUtils;
+
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,8 +20,11 @@ import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 @Stateless
 public class PostDao {
 
+    @Inject
+   private DataSource dataSource;
+
     public Post getSingle(Long id) {
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM post where id=?");
             statement.setLong(1, id);
@@ -45,7 +51,7 @@ public class PostDao {
 
         try {
 
-            connection = DataSourceConfiguration.getConnection();
+            connection = dataSource.getConnection();
             connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
             connection.setAutoCommit(false);
 
@@ -64,9 +70,7 @@ public class PostDao {
             ex.printStackTrace();
             throw new RuntimeException("Cannot set feed viewed to user. SQL exception");
         } finally {
-            if (connection != null) {
-                connection.close(); //TODO
-            }
+            IOUtils.closeQuietly(connection);
         }
     }
 }

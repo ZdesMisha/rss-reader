@@ -1,25 +1,29 @@
 package com.dataart.server.dao;
 
-import com.dataart.server.DataSourceConfiguration;
-import com.dataart.server.persistence.Feed;
-import com.dataart.server.persistence.Post;
+import com.dataart.server.domain.Feed;
+import com.dataart.server.domain.Post;
 import com.dataart.server.utils.DateConverter;
+import com.dataart.server.utils.IOUtils;
+
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.dataart.server.utils.PaginationUtils.PAGE_SIZE;
-import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
-
 /**
  * Created by misha on 09.08.16.
  */
 @Stateless
 public class FeedDao {
 
+    @Inject
+    private DataSource dataSource;
+
     public List<Feed> getAll(String sessionEmail) {
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             List<Feed> list = new ArrayList<>();
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM rss " +
@@ -43,14 +47,14 @@ public class FeedDao {
     public List<Feed> getAllPages(String sessionEmail, int pages) {
         PreparedStatement statement;
         ResultSet result;
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             List<Feed> list = new ArrayList<>();
             statement = connection.prepareStatement(
                     "SELECT * FROM rss " +
                             "WHERE id IN (SELECT rss_id FROM users_rss WHERE user_id=(SELECT id FROM users WHERE email=?)) " +
                             "LIMIT ?");
             statement.setString(1, sessionEmail);
-            statement.setInt(2, PAGE_SIZE * (pages+1));
+            statement.setInt(2, PAGE_SIZE * (pages + 1));
             result = statement.executeQuery();
             while (result.next()) {
                 System.out.println("Feed!!!");
@@ -71,7 +75,7 @@ public class FeedDao {
 
         PreparedStatement statement;
         ResultSet result;
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             List<Feed> list = new ArrayList<>();
             statement = connection.prepareStatement(
                     "SELECT * FROM rss " +
@@ -102,7 +106,7 @@ public class FeedDao {
         List<Post> list = new ArrayList<>();
         Feed feed;
 
-        try (Connection connection = DataSourceConfiguration.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
 
             // GET FEED INFO
             statement = connection.prepareStatement( //TODO if et really needed
@@ -157,8 +161,7 @@ public class FeedDao {
 
         try {
 
-            connection = DataSourceConfiguration.getConnection();
-            connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
 
             //EXTRACT USER ID
@@ -264,9 +267,7 @@ public class FeedDao {
             System.out.println("Next exception " + ex.getNextException());
             throw new RuntimeException("Cannot assign feed to user. SQL exception");
         } finally {
-            if (connection != null) {
-                connection.close(); //TODO
-            }
+            IOUtils.closeQuietly(connection);
         }
     }
 
@@ -283,8 +284,7 @@ public class FeedDao {
 
         try {
 
-            connection = DataSourceConfiguration.getConnection();
-            connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
 
             //EXTRACT USER ID
@@ -358,9 +358,7 @@ public class FeedDao {
             ex.printStackTrace();
             throw new RuntimeException("Cannot assign feed to user. SQL exception");
         } finally {
-            if (connection != null) {
-                connection.close(); //TODO
-            }
+            IOUtils.closeQuietly(connection);
         }
     }
 
@@ -373,8 +371,7 @@ public class FeedDao {
         List<Post> list = new ArrayList<>();
 
 
-        try (Connection connection = DataSourceConfiguration.getConnection();) {
-            connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
+        try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
             //EXTRACT USER ID
@@ -422,8 +419,7 @@ public class FeedDao {
 
         try {
 
-            connection = DataSourceConfiguration.getConnection();
-            connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
 
             //EXTRACT USER ID
@@ -445,17 +441,16 @@ public class FeedDao {
             statement.setLong(2, feed_id);
             statement.executeUpdate();
 
-
             connection.commit();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            connection.rollback();
+            if (connection != null) {
+                connection.rollback();
+            }
             throw new RuntimeException("Cannot unassign feed from user. SQL exception");
         } finally {
-            if (connection != null) {
-                connection.close(); //TODO
-            }
+            IOUtils.closeQuietly(connection);
         }
 
     }

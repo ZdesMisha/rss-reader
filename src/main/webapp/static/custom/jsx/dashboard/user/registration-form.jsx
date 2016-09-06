@@ -1,5 +1,7 @@
 import React from 'react';
 import UserStore from '../store/user-store';
+import jQuery from 'jquery';
+
 
 
 module.exports = React.createClass({
@@ -11,7 +13,20 @@ module.exports = React.createClass({
         jQuery.map(arr, function (n, i) {
             json[n['name']] = n['value'];
         });
-        UserStore.register(json);
+        UserStore.register(json).then(function () {
+            this.showAlert();
+        }.bind(this));
+    },
+
+    hideAlert: function () {
+        jQuery('#registration-alert').hide();
+    },
+
+    showAlert: function () {
+        jQuery('#registration-alert').show();
+        jQuery('#registration-alert').fadeTo(2000, 500).slideUp(500, function () {
+            $("#registration-alert").slideUp(500);
+        });
     },
 
     switchToLogin: function () {
@@ -33,7 +48,11 @@ module.exports = React.createClass({
             </form>
             <button onClick={this.register} className="btn btn-lg btn-primary btn-block form-signin">Sign in</button>
             <button onClick={this.switchToLogin} className="btn btn-lg btn-primary btn-block form-signin" >Back to login page</button>
-
+            <div className="alert alert-danger" id="registration-alert" hidden="hidden">
+                <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={this.hideAlert}>&times;</a>
+                <span className="sr-only">Error:</span>
+                Server error occurred
+            </div>
         </div>
     }
 

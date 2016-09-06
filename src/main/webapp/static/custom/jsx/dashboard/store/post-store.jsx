@@ -37,15 +37,20 @@ module.exports = Reflux.createStore({
                 console.log(this.feed);
                 switch (this.responseStatus) {
                     case 200:
+                        console.log('200');
                         this.page++;
                         this.feed.posts = this.feed.posts.concat(jsonBody.posts);
                         this.triggerChange();
+                        return this.responseStatus;
                         break;
                     case 401:
+                        console.log('401');
                         UserStore.changeStatus('login');
                         break;
                     default:
-                        return jsonBody.error;
+                        console.log('default');
+                        return this.responseStatus;
+                        break;
                 }
             }.bind(this));
         }
@@ -58,12 +63,12 @@ module.exports = Reflux.createStore({
         }.bind(this)).then(function (jsonBody) {
             switch (this.responseStatus) {
                 case 200:
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },

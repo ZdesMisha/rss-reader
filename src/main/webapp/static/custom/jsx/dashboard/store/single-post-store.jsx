@@ -17,19 +17,19 @@ module.exports = Reflux.createStore({
 
     showPost: function () {
         return Api.getPost(this.post.id).then(function (response) {
-            this.status = response.status;
+            this.responseStatus = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            switch (this.status) {
+            switch (this.responseStatus) {
                 case 200:
                     this.post = jsonBody;
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 case 401:
                     UserStore.changeStatus('login');
                     break;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },

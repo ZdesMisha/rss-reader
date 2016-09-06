@@ -46,6 +46,7 @@ module.exports = {
             },
             body: JSON.stringify(json)
         }).then(function (response) {
+            console.log("response ",response);
             return response;
         })
 

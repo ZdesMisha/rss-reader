@@ -15,10 +15,8 @@ module.exports = React.createClass({
         jQuery.map(arr, function (n, i) {
             json[n['name']] = n['value'];
         });
-        console.log(json);
-        UserStore.login(json).then(function (result) {
-            console.log('errorrrrrrr');
-            jQuery('#alert').show();
+        UserStore.login(json).then(function () {
+            this.showAlert();
         }.bind(this));
     },
 
@@ -27,7 +25,14 @@ module.exports = React.createClass({
     },
 
     hideAlert: function () {
-        jQuery('#alert').hide();
+        jQuery('#login-alert').hide();
+    },
+
+    showAlert: function () {
+        jQuery('#login-alert').show();
+        jQuery('#login-alert').fadeTo(2000, 500).slideUp(500, function () {
+            $("#login-alert").slideUp(500);
+        });
     },
 
     render: function () {
@@ -44,10 +49,11 @@ module.exports = React.createClass({
             <button onClick={this.switchToRegistration} className="btn btn-lg btn-primary btn-block form-signin">
                 Registration
             </button>
-            <div className="alert alert-danger" id="alert" hidden="hidden">
-                <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={this.hideAlert}>&times;</a>
+            <div className="alert alert-danger" id="login-alert" hidden="hidden">
+                <a href="#" className="close" data-dismiss="alert" aria-label="close"
+                   onClick={this.hideAlert}>&times;</a>
                 <span className="sr-only">Error:</span>
-                ERROR OCCURRED
+                Wrong email or password
             </div>
 
         </div>

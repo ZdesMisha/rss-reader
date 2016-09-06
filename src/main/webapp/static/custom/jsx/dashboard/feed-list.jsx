@@ -5,6 +5,7 @@ import FeedActions from './action/feed-actions';
 import FeedStore from './store/feed-store';
 import jQuery from 'jquery';
 import ControlPanel from './feed-control-bar';
+import UserStore from './store/user-store';
 
 
 module.exports = React.createClass({
@@ -22,7 +23,29 @@ module.exports = React.createClass({
     },
 
     componentDidMount: function () {
-        FeedActions.getNextPage()
+        FeedActions.getNextPage().then(function (status) {
+            switch (status) {
+                case 200:
+                    break;
+                case 401:
+                    UserStore.changeStatus('login');
+                    break;
+                default:
+                    this.showAlert();
+                    break;
+            }
+        }.bind(this));
+    },
+
+    hideAlert: function () {
+        jQuery('#feed-list-alert').hide();
+    },
+
+    showAlert: function () {
+        jQuery('#feed-list-alert').show();
+        jQuery('#feed-list-alert').fadeTo(2000, 500).slideUp(500, function () {
+            $("#feed-list-alert").slideUp(500);
+        });
     },
 
     getNextPage: function () {
@@ -30,15 +53,23 @@ module.exports = React.createClass({
         var scrollBottom = jQuery('#all-feeds').scrollTop();
         var windowHeight = jQuery('#all-feeds').innerHeight();
 
-        console.log("windowHeight ", windowHeight);
-        console.log("trueheight ", scrollHeight);
-        console.log("scrollBottom ", scrollBottom);
         if (scrollBottom + windowHeight >= scrollHeight) {
             if (this.isolate.isRequesting || (this.isolate.pageNo > 0 && this.isolate.pageNo >= this.isolate.totalPages)) {
                 return;
             }
             this.isRequesting = true;
-            FeedActions.getNextPage()
+            FeedActions.getNextPage().then(function (status) {
+                switch (status) {
+                    case 200:
+                        break;
+                    case 401:
+                        UserStore.changeStatus('login');
+                        break;
+                    default:
+                        this.showAlert();
+                        break;
+                }
+            }.bind(this));
         }
 
     },
@@ -57,6 +88,12 @@ module.exports = React.createClass({
             <div className="col-md-3 sidebar" id="all-feeds" onScroll={this.getNextPage}>
                 <ControlPanel/>
                 {feedlist}
+                <div className="alert alert-danger dashboard-alert" id="feed-list-alert" hidden="hidden">
+                    <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
+                       onClick={this.hideAlert}>&times;</a>
+                    <span className="sr-only">Error:</span>
+                    Server error occurred
+                </div>
             </div>
         )
     },

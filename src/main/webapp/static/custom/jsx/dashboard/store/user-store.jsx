@@ -15,7 +15,7 @@ module.exports = Reflux.createStore({
     init: function () {
         this.token = localStorage.getItem('token');
         if (this.token == null) {
-            this.status = 'login';
+            this.status = 'login'; //TODO temporary
         } else {
             this.status = 'dashboard';
         }
@@ -43,9 +43,9 @@ module.exports = Reflux.createStore({
                     this.status = 'dashboard';
                     localStorage.setItem('token', token);
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -62,9 +62,9 @@ module.exports = Reflux.createStore({
                     this.status = 'dashboard';
                     localStorage.setItem('token', token);
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },
@@ -80,9 +80,9 @@ module.exports = Reflux.createStore({
                     this.status = 'login';
                     localStorage.setItem('token', '');
                     this.triggerChange();
-                    break;
+                    return this.responseStatus;
                 default:
-                    return jsonBody.error;
+                    return this.responseStatus;
             }
         }.bind(this));
     },

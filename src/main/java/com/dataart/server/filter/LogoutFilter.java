@@ -39,7 +39,8 @@ public class LogoutFilter implements Filter {
 
         } catch (Exception e) {
             e.printStackTrace();
-            httpResponse.sendError(401);
+            httpResponse.setStatus(401);
+            httpResponse.getWriter().print("{\"error\":\"Logout error\"}");
         }
     }
 

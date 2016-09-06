@@ -1,6 +1,6 @@
 package com.dataart.server.resource;
 
-import com.dataart.server.json.JsonUtils;
+import com.dataart.server.utils.JsonBuilder;
 import com.dataart.server.service.PostService;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
@@ -24,13 +24,13 @@ public class PostResource {
     public Response setViewed(@PathParam("id") Long id) {
         System.out.println("set viewed");
         postService.setViewed(id);
-        return JsonUtils.buildEmptySuccessResponse(200);
+        return JsonBuilder.buildEmptySuccessResponse(200);
     }
 
     @GET
     @Path("/{id}")
     public Response getPost(@PathParam("id") Long id) {
         System.out.println("get post");
-        return JsonUtils.buildResponse(postService.getPost(id), 200);
+        return JsonBuilder.buildResponse(postService.getPost(id), 200);
     }
 }

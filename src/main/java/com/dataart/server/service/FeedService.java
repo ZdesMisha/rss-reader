@@ -4,7 +4,7 @@ import com.dataart.server.authenticaion.AuthProvider;
 import com.dataart.server.dao.FeedDao;
 import com.dataart.server.exception.ServiceException;
 import com.dataart.server.json.entity.RssLink;
-import com.dataart.server.persistence.Feed;
+import com.dataart.server.domain.Feed;
 import com.dataart.server.xml.RssReader;
 
 import javax.ejb.Singleton;
@@ -53,10 +53,6 @@ public class FeedService {
                     "Error message: " + ex.getMessage());
         }
     }
-
-
-
-
 
     public Feed getSingle(Long id, String sortField, String sortDir, int page) {
         try {

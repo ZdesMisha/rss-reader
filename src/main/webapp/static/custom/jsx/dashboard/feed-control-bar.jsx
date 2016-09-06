@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import jQuery from 'jquery';
 import {Modal} from 'react-bootstrap';
 import {FormGroup} from 'react-bootstrap';
 import {ControlLabel} from 'react-bootstrap';
@@ -9,7 +10,7 @@ import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
 import FeedActions from './action/feed-actions';
 import PostActions from './action/post-actions';
-
+import UserStore from './store/user-store';
 
 
 module.exports = React.createClass({
@@ -19,24 +20,24 @@ module.exports = React.createClass({
             showModal: false,
             value: '',
             showAddBtnTooltip: false,
-            showRefreshBtnTooltip:false
+            showRefreshBtnTooltip: false
         };
     },
 
     toggleAddBtnTooltip() {
-        this.setState({ showAddBtnTooltip: true });
+        this.setState({showAddBtnTooltip: true});
     },
 
     hideAddBtnTooltip() {
-        this.setState({ showAddBtnTooltip: false });
+        this.setState({showAddBtnTooltip: false});
     },
 
     toggleRefreshBtnTooltip() {
-        this.setState({ showRefreshBtnTooltip: true });
+        this.setState({showRefreshBtnTooltip: true});
     },
 
     hideRefreshBtnTooltip() {
-        this.setState({ showRefreshBtnTooltip: false });
+        this.setState({showRefreshBtnTooltip: false});
     },
 
     onClose() {
@@ -60,14 +61,56 @@ module.exports = React.createClass({
     onAddBtnClick: function () {
         var feed = {};
         feed['link'] = this.state.value;
-        FeedActions.addFeed(feed);
-        FeedActions.refreshFeedList();
+        FeedActions.addFeed(feed).then(function (status) {
+            switch (status) {
+                case 200:
+                    FeedActions.refreshFeedList().then(function (status) {
+                        switch (status) {
+                            case 200:
+                                break;
+                            case 401:
+                                UserStore.changeStatus('login');
+                                break;
+                            default:
+                                this.showAlert();
+                                break;
+                        }
+                    }.bind(this));
+                    break;
+                case 401:
+                    UserStore.changeStatus('login');
+                    break;
+                default:
+                    this.showAlert();
+                    break;
+            }
+        }.bind(this));
     },
 
     onRefreshBtnClick: function () {
-        FeedActions.refreshFeeds();
-        PostActions.cleanPostList();
-        PostActions.getNextPage()
+        FeedActions.refreshFeeds().then(function (status) {
+            if (status != 200) {
+                this.showAlert();
+            } else {
+                PostActions.cleanPostList();
+                PostActions.getNextPage().then(function (status) {
+                    if (status != 200) {
+                        this.showAlert();
+                    }
+                }.bind(this));
+            }
+        }.bind(this));
+    },
+
+    hideAlert: function () {
+        jQuery('#feed-control-bar-alert').hide();
+    },
+
+    showAlert: function () {
+        jQuery('#feed-control-bar-alert').show();
+        jQuery('#feed-control-bar-alert').fadeTo(2000, 500).slideUp(500, function () {
+            $("#feed-control-bar-alert").slideUp(500);
+        });
     },
 
     render: function () {
@@ -83,9 +126,21 @@ module.exports = React.createClass({
             target: () => ReactDOM.findDOMNode(this.refs.refreshBtn)
         };
 
+
         return (<div className="control-panel">
-            <button ref="addBtn" onMouseEnter={this.toggleAddBtnTooltip} onMouseOut={this.hideAddBtnTooltip} onClick={this.onOpenBtnClick} className="btn btn-xs btn-success glyphicon glyphicon-plus refresh-btn"/>
-            <button ref="refreshBtn" onMouseEnter={this.toggleRefreshBtnTooltip} onMouseOut={this.hideRefreshBtnTooltip} onClick={this.onRefreshBtnClick} className="btn btn-xs btn-primary glyphicon glyphicon-repeat"/>
+            <span>
+            <button ref="addBtn" onMouseEnter={this.toggleAddBtnTooltip} onMouseOut={this.hideAddBtnTooltip}
+                    onClick={this.onOpenBtnClick}
+                    className="btn btn-xs btn-success glyphicon glyphicon-plus refresh-btn"/>
+            <button ref="refreshBtn" onMouseEnter={this.toggleRefreshBtnTooltip} onMouseOut={this.hideRefreshBtnTooltip}
+                    onClick={this.onRefreshBtnClick} className="btn btn-xs btn-primary glyphicon glyphicon-repeat"/>
+            <div className="alert alert-danger dashboard-alert" id="feed-control-bar-alert" hidden="hidden">
+                <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
+                   onClick={this.hideAlert}>&times;</a>
+                <span className="sr-only">Error:</span>
+                Server error occurred
+            </div>
+                </span>
             <Overlay {...addBtnProps} placement="top">
                 <Tooltip id="add-right">Add feed</Tooltip>
             </Overlay>
@@ -110,6 +165,12 @@ module.exports = React.createClass({
                             />
                             <FormControl.Feedback />
                         </FormGroup>
+                        <div className="alert alert-danger dashboard-alert" id="feed-control-bar-alert">
+                            <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
+                               onClick={this.hideAlert}>&times;</a>
+                            <span className="sr-only">Error:</span>
+                            ERROR OCCURRED
+                        </div>
                         <Button onClick={this.onAddBtnClick}>
                             Submit
                         </Button>

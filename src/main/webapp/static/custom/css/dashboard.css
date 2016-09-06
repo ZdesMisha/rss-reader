@@ -234,3 +234,14 @@ body {
     right: 12px;
     top: 12px;
 }
+
+.dashboard-alert{
+    margin-top: 10px;
+    padding: 4px;
+    font-size: 11px;
+    margin-bottom: 0;
+}
+
+.alert-close-btn{
+    font-size: 15px;
+}

@@ -40,7 +40,8 @@ public class AuthenticationFilter implements Filter {
 
         } catch (Exception e) {
             e.printStackTrace();
-            httpResponse.sendError(401);
+            httpResponse.setStatus(401);
+            httpResponse.getWriter().print("{\"error\":\"Bad authorization token\"}");
         }
     }
 

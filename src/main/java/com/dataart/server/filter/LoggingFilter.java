@@ -1,7 +1,7 @@
 package com.dataart.server.filter;
 
 import com.dataart.server.authenticaion.AuthProvider;
-import com.dataart.server.authenticaion.UserPrincipal;
+import com.dataart.server.domain.UserPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.inject.Inject;
@@ -50,7 +50,8 @@ public class LoggingFilter implements Filter {
 
         } catch (Exception e) {
             e.printStackTrace();
-            httpResponse.sendError(401);
+            httpResponse.setStatus(401);
+            httpResponse.getWriter().print("{\"error\":\"Bad credentials\"}");
         }
     }
 

@@ -1,7 +1,7 @@
 package com.dataart.server.xml;
 
-import com.dataart.server.persistence.Feed;
-import com.dataart.server.persistence.Post;
+import com.dataart.server.domain.Feed;
+import com.dataart.server.domain.Post;
 import com.dataart.server.utils.DateConverter;
 
 import javax.ejb.Stateless;

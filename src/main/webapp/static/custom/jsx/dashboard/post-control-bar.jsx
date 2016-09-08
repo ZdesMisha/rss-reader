@@ -33,45 +33,12 @@ module.exports = React.createClass({
 
     onSortDesc() {
         PostActions.setSortDirection('desc');
-        PostActions.getNextPage().then(function (status) {
-            switch (status) {
-                case 200:
-                    break;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    this.showAlert();
-                    break;
-            }
-        }.bind(this));
+        PostActions.getNextPage();
     },
 
     onSortAsc: function () {
         PostActions.setSortDirection('asc');
-        PostActions.getNextPage().then(function (status) {
-            switch (status) {
-                case 200:
-                    break;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    this.showAlert();
-                    break;
-            }
-        }.bind(this));
-    },
-
-    hideAlert: function () {
-        jQuery('#post-control-bar-alert').hide();
-    },
-
-    showAlert: function () {
-        jQuery('#post-control-bar-alert').show();
-        jQuery('#post-control-bar-alert').fadeTo(2000, 500).slideUp(500, function () {
-            $("#post-control-bar-alert").slideUp(500);
-        });
+        PostActions.getNextPage();
     },
 
     render: function () {
@@ -94,12 +61,6 @@ module.exports = React.createClass({
             <button ref="AscSortBtn" onClick={this.onSortAsc} onMouseEnter={this.toggleAscTooltip}
                     onMouseOut={this.hideAscTooltip}
                     className="btn btn-xs btn-primary glyphicon glyphicon-arrow-down "/>
-            <div className="alert alert-danger dashboard-alert" id="post-control-bar-alert" hidden="hidden">
-                <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
-                   onClick={this.hideAlert}>&times;</a>
-                <span className="sr-only">Error:</span>
-                Server error occurred
-            </div>
             <Overlay {...onSortDescProps} placement="top">
                 <Tooltip id="desc-right">Show newest</Tooltip>
             </Overlay>

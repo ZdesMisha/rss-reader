@@ -1,12 +1,14 @@
 package com.dataart.server.domain;
 
 
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
  * Created by misha on 05.08.16.
  */
 public class Feed {
+
     private Long id;
     private String title;
     private String link;
@@ -19,9 +21,17 @@ public class Feed {
         this.link = link;
     }
 
-    public Feed(Long id, String title, String link) {
-        this.id=id;
-        this.title=title;
+    public Feed(Long id, String title,String link) {
+        this.id = id;
+        this.title = title;
+        this.link = link;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
         this.link = link;
     }
 
@@ -41,13 +51,6 @@ public class Feed {
         this.title = title;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
 
     public List<Post> getPosts() {
         return posts;

@@ -1,15 +1,13 @@
 package com.dataart.server.service;
 
-import com.dataart.server.authenticaion.AuthProvider;
+import com.dataart.server.authentication.AuthProvider;
 import com.dataart.server.dao.FeedDao;
-import com.dataart.server.exception.ServiceException;
-import com.dataart.server.json.entity.RssLink;
+import com.dataart.server.domain.service.RssLink;
 import com.dataart.server.domain.Feed;
-import com.dataart.server.xml.RssReader;
+import com.dataart.server.xml.RssParser;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import java.sql.SQLException;
 import java.util.List;
 
 import static com.dataart.server.utils.PaginationUtils.*;
@@ -25,61 +23,41 @@ public class FeedService {
     private FeedDao feedDao;
 
     @Inject
-    private RssReader rssReader;
+    private RssParser rssReader;
 
     @Inject
     private AuthProvider authProvider;
 
 
-    public List<Feed> getPage(int page) {
-        return feedDao.getPage("misha@mail.ru", getStartRow(page));
+    public List<Feed> getPage(String email, int page) throws Exception {
+        return feedDao.getPage(email, getStartRow(page));
     }
 
-    public void addFeed(RssLink rss) {
-        try {
-            Feed feed = new Feed(rss.getLink());
-            feedDao.addFeed("misha@mail.ru", rssReader.parseFeed(feed));
-        } catch (Exception ex) {
-            throw new ServiceException("Unable to add feed." +
-                    "Error message: " + ex.getMessage());
+    public void addFeed(String email, RssLink rss) throws Exception {
+        Feed feed = new Feed(rss.getLink());
+        feedDao.addFeed(email, rssReader.parse(feed));
+    }
+
+    public void removeFeed(String email, Long id) throws Exception {
+        feedDao.removeFeed(email, id);
+    }
+
+    public Feed getFeedPosts(String email, Long id, String sortField, String sortDir, int page) throws Exception {
+        return feedDao.getFeedPosts(email, id, sortField, sortDir, getStartRow(page));
+    }
+
+    public void refreshFeeds(String email) throws Exception {
+        List<Feed> feeds = feedDao.getAll(email);
+        for (Feed feed : feeds) {
+            feedDao.updateFeed(email, rssReader.parse(feed));
         }
     }
 
-    public void removeFeed(Long id) {
-        try {
-            feedDao.removeFeed("misha@mail.ru", id);
-        } catch (SQLException ex) {
-            throw new ServiceException("Unable to remove feed." +
-                    "Error message: " + ex.getMessage());
-        }
+    public List<Feed> getAllPages(String email, int pages) throws Exception {
+        return feedDao.getAllPages(email, pages);
     }
 
-    public Feed getSingle(Long id, String sortField, String sortDir, int page) {
-        try {
-            return feedDao.getSingle("misha@mail.ru", id, sortField, sortDir, getStartRow(page));
-        } catch (SQLException ex) {
-            throw new ServiceException("Unable to fetch single feeds." +
-                    "Error message: " + ex.getMessage());
-        }
-    }
-
-    public void refreshFeeds() {
-        try {
-            List<Feed> feeds = feedDao.getAll("misha@mail.ru");
-            for (Feed feed : feeds) {
-                feedDao.updateFeed("misha@mail.ru", rssReader.parseFeed(feed));
-            }
-        } catch (Exception ex) {
-            throw new ServiceException("Unable to refresh feeds." +
-                    "Error message: " + ex.getMessage());
-        }
-    }
-
-    public List<Feed> getAllPages(int pages) {
-        return feedDao.getAllPages("misha@mail.ru", pages);
-    }
-
-    public Feed searchByPattern(Long id, String pattern, String sortField, String sortDir, int page) {
-        return feedDao.searchByPattern("misha@mail.ru", id, pattern, sortField, sortDir, getStartRow(page));
+    public Feed searchByPattern(String email, Long id, String pattern, String sortField, String sortDir, int page) throws Exception {
+        return feedDao.searchByPattern(email, id, pattern, sortField, sortDir, getStartRow(page));
     }
 }

@@ -1,6 +1,5 @@
 package com.dataart.server.exception.handler;
 
-import com.dataart.server.exception.ServiceException;
 import com.dataart.server.utils.JsonBuilder;
 
 import javax.validation.ConstraintViolationException;
@@ -16,7 +15,6 @@ public class ValidaionExceptionHandler implements ExceptionMapper<ConstraintViol
 
     @Override
     public Response toResponse(ConstraintViolationException ex) {
-        System.out.println("VALIDATION ERROR");
         return JsonBuilder.buildServiceErrorResponse("DATA IS NOT VALID", 400);
     }
 }

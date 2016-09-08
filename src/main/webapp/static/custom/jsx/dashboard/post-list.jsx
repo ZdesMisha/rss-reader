@@ -5,7 +5,6 @@ import jQuery from 'jquery';
 import PostActions from './action/post-actions';
 import PostStore from './store/post-store';
 import SortingPanel from './post-control-bar'
-import UserStore from './store/user-store';
 
 
 module.exports = React.createClass({
@@ -25,17 +24,6 @@ module.exports = React.createClass({
         }
     },
 
-    hideAlert: function () {
-        jQuery('#post-list-alert').hide();
-    },
-
-    showAlert: function () {
-        jQuery('#post-list-alert').show();
-        jQuery('#post-list-alert').fadeTo(2000, 500).slideUp(500, function () {
-            $("#post-list-alert").slideUp(500);
-        });
-    },
-
     getNextPage: function () {
         var scrollHeight = document.getElementById("all-posts").scrollHeight;
         var scrollBottom = jQuery('#all-posts').scrollTop();
@@ -45,18 +33,7 @@ module.exports = React.createClass({
                 return;
             }
             this.isRequesting = true;
-            PostActions.getNextPage().then(function (status) {
-                switch (status) {
-                    case 200:
-                        break;
-                    case 401:
-                        UserStore.changeStatus('login');
-                        break;
-                    default:
-                        this.showAlert();
-                        break;
-                }
-            }.bind(this));
+            PostActions.getNextPage();
         }
 
     },
@@ -83,12 +60,6 @@ module.exports = React.createClass({
         return (<div className="col-md-3 main" id="all-posts" onScroll={this.getNextPage}>
             <SortingPanel/>
             {postList}
-            <div className="alert alert-danger dashboard-alert" id="post-list-alert" hidden="hidden">
-                <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
-                   onClick={this.hideAlert}>&times;</a>
-                <span className="sr-only">Error:</span>
-                Server error occurred
-            </div>
         </div>);
     },
 

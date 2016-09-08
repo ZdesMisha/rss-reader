@@ -4,8 +4,10 @@ import com.dataart.server.dao.UserDao;
 import com.dataart.server.domain.User;
 import com.dataart.server.exception.ServiceException;
 
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import static com.dataart.server.utils.MD5Crypter.*;
 
@@ -13,12 +15,13 @@ import static com.dataart.server.utils.MD5Crypter.*;
  * Created by misha on 11.08.16.
  */
 
-@Stateless
+@Singleton
 public class UserService {
 
     @Inject
     private UserDao userDao;
 
+    @Transactional
     public void create(User user) throws Exception {
         if (isExists(user.getEmail())) {
             throw new ServiceException("USER WITH SUCH EMAIL IS ALREADY EXISTS");

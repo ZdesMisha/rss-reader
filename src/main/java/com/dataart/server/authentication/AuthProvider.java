@@ -1,6 +1,7 @@
-package com.dataart.server.authenticaion;
+package com.dataart.server.authentication;
 
-import com.dataart.server.domain.UserPrincipal;
+import com.dataart.server.domain.service.UserPrincipal;
+import com.dataart.server.exception.ServiceException;
 import com.dataart.server.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -44,7 +45,7 @@ public class AuthProvider {
         if (tokens.containsKey(token)) {
             Jwts.parser().setSigningKey(SIGNATURE_KEY).parseClaimsJws(token);
         } else {
-            throw new Exception("INVALID TOKEN");
+            throw new ServiceException("INVALID TOKEN");
         }
     }
 
@@ -52,8 +53,7 @@ public class AuthProvider {
         tokens.remove(token);
     }
 
-    public String prepareToken(UserPrincipal userPrincipal) throws Exception {
-        String email = userPrincipal.getName();
+    public String prepareToken(String email) throws Exception {
         Map<String, Object> header = new HashMap<String, Object>() {{
             put("alg", CRYPTO_ALG);
             put("typ", TOKEN_TYPE);
@@ -68,15 +68,13 @@ public class AuthProvider {
     }
 
     public void attemptAuthentication(UserPrincipal userPrincipal) throws Exception {
-        String email = userPrincipal.getName();
-        String password = userPrincipal.getPassword();
-        if (!userService.isValid(email,password)) {
-            throw new Exception("NO SUCH USER OR PASSWORD DOES NOT MATCH");
+        if (!userService.isValid(userPrincipal.getName(), userPrincipal.getPassword())) {
+            throw new ServiceException("NO SUCH USER OR PASSWORD DOES NOT MATCH");
         }
     }
 
-    public String getEmailByToken() {
-        return tokens.get("token");
+    public String getEmailByToken(String token) {
+        return tokens.get(token);
     }
 
 }

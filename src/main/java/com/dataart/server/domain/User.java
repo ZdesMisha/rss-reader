@@ -17,15 +17,6 @@ public class User {
     @Size(min = 7,max = 100)
     private String password;
 
-//    public User() {
-//    }
-//
-//    public User(String email, String password) {
-//
-//        this.email = email;
-//        this.password = password;
-//    }
-
     public String getEmail() {
         return email;
     }
@@ -42,12 +33,4 @@ public class User {
         this.password = password;
     }
 
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
 }

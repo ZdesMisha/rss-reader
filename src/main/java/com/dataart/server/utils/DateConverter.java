@@ -1,7 +1,6 @@
 package com.dataart.server.utils;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,22 +12,17 @@ public class DateConverter {
 
     private static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
-    public static Date parseDate(String dateToParse) {
+    public static Date parseDate(String dateToParse) throws Exception {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        try {
-            if (dateToParse.trim().length() == 0) {
-                return new Date();
-            } else {
-                return format.parse(dateToParse);
-            }
-        } catch (ParseException ex) {
-            System.out.println("Unable to parse string to date: " + dateToParse);
-            throw new RuntimeException("Unable to parse string to date");
+        if (dateToParse.trim().length() == 0) {
+            return new Date();
+        } else {
+            return format.parse(dateToParse);
         }
     }
 
     public static Timestamp toSqlTimestamp(Date date) {
-        if(date==null){
+        if (date == null) {
             return null;
         }
         Calendar cal = Calendar.getInstance();

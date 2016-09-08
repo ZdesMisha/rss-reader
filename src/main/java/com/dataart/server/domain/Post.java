@@ -4,6 +4,7 @@ package com.dataart.server.domain;
 import com.dataart.server.utils.DateTimeSerializer;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -23,7 +24,6 @@ public class Post {
 
     public Post(){
     }
-
 
     public Post(Long id, String title, Date pubDate,boolean isViewed) {
         this.id = id;

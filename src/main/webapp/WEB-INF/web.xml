@@ -18,7 +18,7 @@
 
     <filter>
         <filter-name>LoginFilter</filter-name>
-        <filter-class>com.dataart.server.filter.LoggingFilter</filter-class>
+        <filter-class>com.dataart.server.filter.LoginFilter</filter-class>
     </filter>
 
     <filter-mapping>

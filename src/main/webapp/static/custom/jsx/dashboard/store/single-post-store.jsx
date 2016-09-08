@@ -20,32 +20,27 @@ module.exports = Reflux.createStore({
             this.responseStatus = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    this.post = jsonBody;
-                    this.triggerChange();
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
+            if (this.responseStatus == 200) {
+
+                this.post = jsonBody;
+                this.triggerChange();
+                return this.responseStatus;
             }
         }.bind(this));
     },
 
 
-    changeViewedPost: function(postId) {
-        this.post.id=postId;
+    changeViewedPost: function (postId) {
+        this.post.id = postId;
     },
-    
-    cleanStore: function() {
-        this.post={};
+
+    cleanStore: function () {
+        this.post = {};
         this.triggerChange();
     },
 
     triggerChange: function () {
-        console.log('post',this.post);
+        console.log('post', this.post);
         this.trigger('change', this.post);
     }
 

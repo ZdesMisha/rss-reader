@@ -4,6 +4,7 @@ import com.dataart.server.domain.Post;
 import com.dataart.server.utils.DateConverter;
 import com.dataart.server.utils.IOUtils;
 
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -17,13 +18,13 @@ import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 /**
  * Created by misha on 25.08.16.
  */
-@Stateless
+@Singleton
 public class PostDao {
 
     @Inject
-   private DataSource dataSource;
+    private DataSource dataSource;
 
-    public Post getSingle(Long id) {
+    public Post getSingle(Long id) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM post where id=?");
@@ -38,22 +39,12 @@ public class PostDao {
                     DateConverter.toDate(result.getTimestamp("pubDate"))
             );
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot find item feeds");
-
         }
     }
 
-    public void setViewed(String sessionEmail, Long post_id) throws SQLException {
+    public void setViewed(String sessionEmail, Long post_id) throws Exception {
 
-        Connection connection = null;
-
-        try {
-
-            connection = dataSource.getConnection();
-            connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
-            connection.setAutoCommit(false);
+        try (Connection connection = dataSource.getConnection()) {
 
             //SET POST VIEWED
             PreparedStatement statement = connection.prepareStatement(
@@ -64,13 +55,6 @@ public class PostDao {
             statement.setLong(2, post_id);
             statement.executeUpdate();
 
-            connection.commit();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot set feed viewed to user. SQL exception");
-        } finally {
-            IOUtils.closeQuietly(connection);
         }
     }
 }

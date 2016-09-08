@@ -9,18 +9,18 @@ import {Button} from 'react-bootstrap';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
 import FeedActions from './action/feed-actions';
+import FeedStore from './store/feed-store';
 import PostActions from './action/post-actions';
-import UserStore from './store/user-store';
 
 
 module.exports = React.createClass({
 
     getInitialState() {
         return {
-            showModal: false,
             value: '',
+            showModal: false,
             showAddBtnTooltip: false,
-            showRefreshBtnTooltip: false
+            showRefreshBtnTooltip: false,
         };
     },
 
@@ -61,24 +61,10 @@ module.exports = React.createClass({
     onAddBtnClick: function () {
         var feed = {};
         feed['link'] = this.state.value;
-        FeedActions.addFeed(feed).then(function (status) {
+        FeedStore.addFeed(feed).then(function (status) {
             switch (status) {
                 case 200:
-                    FeedActions.refreshFeedList().then(function (status) {
-                        switch (status) {
-                            case 200:
-                                break;
-                            case 401:
-                                UserStore.changeStatus('login');
-                                break;
-                            default:
-                                this.showAlert();
-                                break;
-                        }
-                    }.bind(this));
-                    break;
-                case 401:
-                    UserStore.changeStatus('login');
+                    FeedActions.refreshFeedList();
                     break;
                 default:
                     this.showAlert();
@@ -88,18 +74,9 @@ module.exports = React.createClass({
     },
 
     onRefreshBtnClick: function () {
-        FeedActions.refreshFeeds().then(function (status) {
-            if (status != 200) {
-                this.showAlert();
-            } else {
-                PostActions.cleanPostList();
-                PostActions.getNextPage().then(function (status) {
-                    if (status != 200) {
-                        this.showAlert();
-                    }
-                }.bind(this));
-            }
-        }.bind(this));
+        FeedActions.refreshFeeds();
+        PostActions.cleanPostList();
+        PostActions.getNextPage();
     },
 
     hideAlert: function () {
@@ -169,7 +146,7 @@ module.exports = React.createClass({
                             <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
                                onClick={this.hideAlert}>&times;</a>
                             <span className="sr-only">Error:</span>
-                            ERROR OCCURRED
+                            Unable to process rss resource
                         </div>
                         <Button onClick={this.onAddBtnClick}>
                             Submit

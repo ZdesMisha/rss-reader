@@ -89,7 +89,7 @@ function main(args) {
     'vendor'
   ]);
   var INCLUDED_EXTENSIONS = new Set([
-    // This extension whitelist is how we avoid modifying binary files
+    // This service whitelist is how we avoid modifying binary files
     '',
     '.css',
     '.html',

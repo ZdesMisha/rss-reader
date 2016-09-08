@@ -17,23 +17,17 @@ module.exports = Reflux.createStore({
     page: 0,
     viewedFeed: {},
 
-    
+
     getNextPage: function () {
         return Api.fetchNextFeedPage(this.page).then(function (response) {
             this.responseStatus = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    this.page++;
-                    this.feedStore.feeds = this.feedStore.feeds.concat(jsonBody);
-                    this.triggerChange();
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
+            if (this.responseStatus == 200) {
+                this.page++;
+                this.feedStore.feeds = this.feedStore.feeds.concat(jsonBody);
+                this.triggerChange();
+                return this.responseStatus;
             }
         }.bind(this));
     },
@@ -43,17 +37,10 @@ module.exports = Reflux.createStore({
             this.responseStatus = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    if (id == this.viewedFeed.id) {
-                        this.changeViewedFeed({});
-                    }
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
+            if (this.responseStatus == 200) {
+                if (id == this.viewedFeed.id) {
+                    this.changeViewedFeed({});
+                }
             }
         }.bind(this));
     },
@@ -62,16 +49,6 @@ module.exports = Reflux.createStore({
         return Api.addFeed(feed).then(function (response) {
             this.responseStatus = response.status;
             return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
-            }
         }.bind(this));
     },
 
@@ -80,17 +57,10 @@ module.exports = Reflux.createStore({
             this.responseStatus = response.status;
             return response.json();
         }.bind(this)).then(function (jsonBody) {
-            console.log('feed pages',jsonBody);
-            switch (this.responseStatus) {
-                case 200:
-                    this.feedStore.feeds = jsonBody;
-                    this.triggerChange();
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
+            if (this.responseStatus == 200) {
+                this.feedStore.feeds = jsonBody;
+                this.triggerChange();
+                return this.responseStatus;
             }
         }.bind(this));
     },
@@ -99,17 +69,6 @@ module.exports = Reflux.createStore({
         return Api.refreshFeeds().then(function (response) {
             this.responseStatus = response.status;
             return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    this.triggerChange();
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
-            }
         }.bind(this));
     },
 
@@ -118,7 +77,7 @@ module.exports = Reflux.createStore({
         this.viewedFeed = feed;
         PostStore.setViewedFeed(feed);
     },
-    
+
     triggerChange: function () {
         this.trigger('change', this.feedStore.feeds);
     }

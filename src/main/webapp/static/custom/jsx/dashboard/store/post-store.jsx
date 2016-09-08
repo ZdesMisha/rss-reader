@@ -33,24 +33,12 @@ module.exports = Reflux.createStore({
                 this.responseStatus = response.status;
                 return response.json();
             }.bind(this)).then(function (jsonBody) {
-                console.log(jsonBody);
-                console.log(this.feed);
-                switch (this.responseStatus) {
-                    case 200:
-                        console.log('200');
-                        this.page++;
-                        this.feed.posts = this.feed.posts.concat(jsonBody.posts);
-                        this.triggerChange();
-                        return this.responseStatus;
-                        break;
-                    case 401:
-                        console.log('401');
-                        UserStore.changeStatus('login');
-                        break;
-                    default:
-                        console.log('default');
-                        return this.responseStatus;
-                        break;
+                if (this.responseStatus == 200) {
+
+                    this.page++;
+                    this.feed.posts = this.feed.posts.concat(jsonBody.posts);
+                    this.triggerChange();
+                    return this.responseStatus;
                 }
             }.bind(this));
         }
@@ -60,16 +48,6 @@ module.exports = Reflux.createStore({
         return Api.setPostViewed(id).then(function (response) {
             this.responseStatus = response.status;
             return response.json();
-        }.bind(this)).then(function (jsonBody) {
-            switch (this.responseStatus) {
-                case 200:
-                    return this.responseStatus;
-                case 401:
-                    UserStore.changeStatus('login');
-                    break;
-                default:
-                    return this.responseStatus;
-            }
         }.bind(this));
     },
 

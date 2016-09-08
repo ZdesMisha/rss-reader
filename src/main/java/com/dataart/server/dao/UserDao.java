@@ -2,6 +2,7 @@ package com.dataart.server.dao;
 
 import com.dataart.server.domain.User;
 
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -12,7 +13,7 @@ import java.sql.ResultSet;
 /**
  * Created by misha on 09.08.16.
  */
-@Stateless
+@Singleton
 public class UserDao {
 
     @Inject
@@ -32,11 +33,14 @@ public class UserDao {
             PreparedStatement statement = connection.prepareStatement("SELECT * from users where email=?");
             statement.setString(1, email);
             ResultSet result = statement.executeQuery();
-            result.next();
-            User fetchedUser = new User();
-            fetchedUser.setPassword(result.getString("password"));
-            fetchedUser.setEmail(result.getString("email"));
-            return fetchedUser;
+            if (result.next()) {
+                User fetchedUser = new User();
+                fetchedUser.setPassword(result.getString("password"));
+                fetchedUser.setEmail(result.getString("email"));
+                return fetchedUser;
+            } else {
+                return null;
+            }
 
         }
     }

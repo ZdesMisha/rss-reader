@@ -1,6 +1,6 @@
 package com.dataart.server.filter;
 
-import com.dataart.server.authenticaion.AuthProvider;
+import com.dataart.server.authentication.AuthProvider;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
+
+import static com.dataart.server.utils.JsonBuilder.ERROR_TEMPLATE;
 
 /**
  * Created by misha on 29.08.16.
@@ -25,7 +27,6 @@ public class LogoutFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("Logout Filter start");
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
@@ -38,9 +39,8 @@ public class LogoutFilter implements Filter {
             httpResponse.getWriter().print("{}");
 
         } catch (Exception e) {
-            e.printStackTrace();
             httpResponse.setStatus(401);
-            httpResponse.getWriter().print("{\"error\":\"Logout error\"}");
+            httpResponse.getWriter().print(String.format(ERROR_TEMPLATE, "LOGOUT ERROR"));
         }
     }
 

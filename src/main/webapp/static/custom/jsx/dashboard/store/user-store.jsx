@@ -2,10 +2,12 @@
  * Created by misha on 09.06.16.
  */
 import UserApi from '../rest/user-api';
-var Reflux = require('reflux');
+import UserActions from '../action/user-actions'
+import Reflux from 'reflux';
 
 module.exports = Reflux.createStore({
 
+    listenables: [UserActions],
 
     token: '',
     status: '',
@@ -15,24 +17,25 @@ module.exports = Reflux.createStore({
     init: function () {
         this.token = localStorage.getItem('token');
         if (this.token == null) {
-            this.status = 'login'; //TODO temporary
+            this.status = 'login';
         } else {
             this.status = 'dashboard';
         }
     },
 
-    switchToLogin: function () {
+    switchToLoginForm: function () {
         this.status = 'login';
         this.triggerChange()
     },
 
-    switchToRegistration: function () {
+    switchToRegistrationForm: function () {
         this.status = "registration";
         this.triggerChange();
     },
 
 
     login: function (json) {
+        console.log(json);
         return UserApi.login(json).then(function (response) {
             this.responseStatus = response.status;
             return response.json();
@@ -52,6 +55,7 @@ module.exports = Reflux.createStore({
 
 
     register: function (json) {
+        console.log(json);
         return UserApi.register(json).then(function (response) {
             this.responseStatus = response.status;
             return response.json();

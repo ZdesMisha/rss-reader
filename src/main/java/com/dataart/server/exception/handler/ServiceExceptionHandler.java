@@ -11,7 +11,8 @@ import javax.ws.rs.core.Response;
  */
 @Singleton
 public class ServiceExceptionHandler {
-    public Response handle(Exception ex){
+    public Response prepareResponse(Exception ex){
+        ex.printStackTrace();
         if(ex instanceof ServiceException){
             return JsonBuilder.buildServiceErrorResponse(ex.getMessage(),400);
         } else {

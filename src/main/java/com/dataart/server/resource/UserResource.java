@@ -4,7 +4,8 @@ package com.dataart.server.resource;
  * Created by misha on 09.08.16.
  */
 
-import com.dataart.server.domain.RegistrationUser;
+import com.dataart.server.authentication.AuthProvider;
+import com.dataart.server.domain.service.RegistrationUser;
 import com.dataart.server.exception.handler.ServiceExceptionHandler;
 import com.dataart.server.utils.JsonBuilder;
 import com.dataart.server.service.UserService;
@@ -30,6 +31,9 @@ public class UserResource {
     @Inject
     private ServiceExceptionHandler exceptionHandler;
 
+    @Inject
+    private AuthProvider authProvider;
+
     @POST
     @Consumes("application/json")
     public Response register(@Valid RegistrationUser registrationUser){
@@ -38,9 +42,10 @@ public class UserResource {
                 return JsonBuilder.buildServiceErrorResponse("PASSWORDS ARE NOT EQUAL", 400);
             }
             userService.create(registrationUser);
-            return JsonBuilder.buildEmptySuccessResponse(200);
+            String token = authProvider.prepareToken(registrationUser.getEmail());
+            return JsonBuilder.buildTokenResponse(token,200);
         } catch (Exception ex) {
-            return exceptionHandler.handle(ex);
+            return exceptionHandler.prepareResponse(ex);
         }
     }
 

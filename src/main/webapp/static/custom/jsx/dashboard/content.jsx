@@ -6,8 +6,8 @@ import Dashboard from './dashboard';
 import LoginForm from './user/login-form';
 import RegistrationForm from './user/registration-form';
 import UserStore from './store/user-store';
-var Reflux = require('reflux');
-
+import UserActions from './action/user-actions';
+import Reflux from 'reflux';
 
 module.exports = React.createClass({
 
@@ -22,7 +22,7 @@ module.exports = React.createClass({
     },
     
     componentDidMount: function() {
-      UserStore.statusRequest();
+      UserActions.statusRequest();
     },
     
     renderLoginForm: function() {

@@ -1,6 +1,6 @@
 package com.dataart.server.filter;
 
-import com.dataart.server.authenticaion.AuthProvider;
+import com.dataart.server.authentication.AuthProvider;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
+
+import static com.dataart.server.utils.JsonBuilder.*;
 
 /**
  * Created by misha on 26.08.16.
@@ -26,8 +28,6 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-        System.out.println(" Authentication Filter start");
-
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         String token = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
@@ -39,9 +39,8 @@ public class AuthenticationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
 
         } catch (Exception e) {
-            e.printStackTrace();
             httpResponse.setStatus(401);
-            httpResponse.getWriter().print("{\"error\":\"Bad authorization token\"}");
+            httpResponse.getWriter().print(String.format(ERROR_TEMPLATE, "BAD AUTH TOKEN"));
         }
     }
 

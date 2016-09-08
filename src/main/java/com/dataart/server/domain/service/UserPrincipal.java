@@ -1,4 +1,6 @@
-package com.dataart.server.domain;
+package com.dataart.server.domain.service;
+
+import com.dataart.server.domain.User;
 
 import java.security.Principal;
 

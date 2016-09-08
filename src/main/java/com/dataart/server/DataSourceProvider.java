@@ -15,7 +15,8 @@ import java.util.Properties;
 @ApplicationScoped
 public class DataSourceProvider {
 
-    @Produces @Singleton
+    @Singleton
+    @Produces
     public DataSource getDataSource() {
 
         Properties properties = new Properties();

@@ -1,4 +1,4 @@
-package com.dataart.server.json.entity;
+package com.dataart.server.domain.service;
 
 
 import javax.validation.constraints.NotNull;
@@ -21,11 +21,4 @@ public class RssLink {
         this.link = link;
     }
 
-    @Override
-    public String
-    toString() {
-        return "RssLink{" +
-                "link='" + link + '\'' +
-                '}';
-    }
 }

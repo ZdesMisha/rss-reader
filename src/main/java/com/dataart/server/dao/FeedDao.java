@@ -5,7 +5,7 @@ import com.dataart.server.domain.Post;
 import com.dataart.server.utils.DateConverter;
 import com.dataart.server.utils.IOUtils;
 
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.*;
@@ -13,16 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dataart.server.utils.PaginationUtils.PAGE_SIZE;
+
 /**
  * Created by misha on 09.08.16.
  */
-@Stateless
+@Singleton
 public class FeedDao {
 
     @Inject
     private DataSource dataSource;
 
-    public List<Feed> getAll(String sessionEmail) {
+    public List<Feed> getAll(String sessionEmail) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             List<Feed> list = new ArrayList<>();
             PreparedStatement statement = connection.prepareStatement(
@@ -38,13 +39,10 @@ public class FeedDao {
                         result.getString("link")));
             }
             return list;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot find all feeds");
         }
     }
 
-    public List<Feed> getAllPages(String sessionEmail, int pages) {
+    public List<Feed> getAllPages(String sessionEmail, int pages) throws Exception {
         PreparedStatement statement;
         ResultSet result;
         try (Connection connection = dataSource.getConnection()) {
@@ -57,21 +55,16 @@ public class FeedDao {
             statement.setInt(2, PAGE_SIZE * (pages + 1));
             result = statement.executeQuery();
             while (result.next()) {
-                System.out.println("Feed!!!");
                 list.add(new Feed(
                         result.getLong("id"),
                         result.getString("title"),
                         result.getString("link")));
             }
             return list;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot " +
-                    "refresh all feeds");
         }
     }
 
-    public List<Feed> getPage(String sessionEmail, int startRow) {
+    public List<Feed> getPage(String sessionEmail, int startRow) throws Exception {
 
         PreparedStatement statement;
         ResultSet result;
@@ -92,33 +85,18 @@ public class FeedDao {
                         result.getString("link")));
             }
             return list;
-        } catch (SQLException ex) {
-            throw new RuntimeException("Unable to fetch feed page." +
-                    "Error Message: " + ex.getMessage());
         }
     }
 
 
-    public Feed getSingle(String sessionEmail, Long feedId, String sortField, String sortDir, int startRow) throws SQLException {
+    public Feed getFeedPosts(String sessionEmail, Long feedId, String sortField, String sortDir, int startRow) throws Exception {
 
         PreparedStatement statement;
         ResultSet result;
         List<Post> list = new ArrayList<>();
-        Feed feed;
+        Feed feed = new Feed();
 
         try (Connection connection = dataSource.getConnection()) {
-
-            // GET FEED INFO
-            statement = connection.prepareStatement( //TODO if et really needed
-                    "SELECT * FROM rss " +
-                            "WHERE id=?");
-            statement.setLong(1, feedId);
-            result = statement.executeQuery();
-            result.next();
-            feed = new Feed(
-                    result.getLong("id"),
-                    result.getString("title"),
-                    result.getString("link"));
 
             //GET POSTS
             statement = connection.prepareStatement(
@@ -138,18 +116,19 @@ public class FeedDao {
                         DateConverter.toDate(result.getTimestamp("pubDate")),
                         result.getBoolean("viewed")));
             }
-
             feed.setPosts(list);
             return feed;
 
         }
     }
 
-    public void addFeed(String sessionEmail, Feed feed) throws SQLException {
+    public void addFeed(String sessionEmail, Feed feed) throws Exception {
+        System.out.println(feed);
+        feed.getPosts().forEach(System.out::println);
+
 
         Connection connection = null;
         PreparedStatement preparedStatement;
-        Statement statement;
         ResultSet result;
         String link = feed.getLink();
         String title = feed.getTitle();
@@ -195,11 +174,11 @@ public class FeedDao {
                 feed_id = result.getInt("id");
             }
 
-
             //INSERT POSTS
 
             query = "INSERT INTO post(title,link,description,pubDate,guid) " +
-                    "SELECT ?,?,?,?,? WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
+                    "SELECT ?,?,?,?,? " +
+                    "WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
             preparedStatement = connection.prepareStatement(query);
             for (Post post : posts) {
                 preparedStatement.setString(1, post.getTitle());
@@ -227,7 +206,8 @@ public class FeedDao {
 
             //ASSING POSTs TO FEED
             query = "INSERT INTO rss_posts(feed_id,post_id) " +
-                    "SELECT ?,? WHERE NOT EXISTS (SELECT 1 FROM rss_posts WHERE feed_id=? AND post_id=?)";
+                    "SELECT ?,? " +
+                    "WHERE NOT EXISTS (SELECT 1 FROM rss_posts WHERE feed_id=? AND post_id=?)";
             preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
                 preparedStatement.setLong(1, feed_id);
@@ -239,48 +219,48 @@ public class FeedDao {
             preparedStatement.executeBatch();
 
 
-            //ASSIGN FEED TO USER //TODO if this is really needed
+            //ASSIGN FEED TO USER
             preparedStatement = connection.prepareStatement(
                     "INSERT INTO users_rss (user_id,rss_id) " +
-                            "VALUES (?,?)");
+                            "SELECT ?,? " +
+                            "WHERE NOT EXISTS (SELECT 1 FROM users_rss WHERE user_id=? AND rss_id=?)");
             preparedStatement.setLong(1, user_id);
             preparedStatement.setLong(2, feed_id);
+            preparedStatement.setLong(3, user_id);
+            preparedStatement.setLong(4, feed_id);
             preparedStatement.executeUpdate();
 
 
             //ASSIGN POSTS TO USER
             query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
-                    "VALUES (?,?,?)";
+                    "SELECT ?,?,?" +
+                    "WHERE NOT EXISTS (SELECT 1 FROM users_posts WHERE post_id=? AND user_id=?)";
             preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
                 preparedStatement.setLong(1, post_id);
                 preparedStatement.setLong(2, feed_id);
                 preparedStatement.setLong(3, user_id);
+                preparedStatement.setLong(4, post_id);
+                preparedStatement.setLong(5, user_id);
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
 
             connection.commit();
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Next exception " + ex.getNextException());
-            throw new RuntimeException("Cannot assign feed to user. SQL exception");
         } finally {
             IOUtils.closeQuietly(connection);
         }
     }
 
-    public void updateFeed(String sessionEmail, Feed feed) throws SQLException { //TODO
+    public void updateFeed(String sessionEmail, Feed feed) throws Exception {
         Connection connection = null;
         PreparedStatement preparedStatement;
-        Statement statement;
         ResultSet result;
         String query;
         Long user_id;
         List<Post> posts = feed.getPosts();
         List<Long> post_ids = new ArrayList<>();
-        List<Long> user_ids = new ArrayList<>();
 
         try {
 
@@ -298,7 +278,8 @@ public class FeedDao {
 
             //ADD NEW POSTS
             query = "INSERT INTO post(title,link,description,pubDate,guid) " +
-                    "SELECT ?,?,?,?,? WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
+                    "SELECT ?,?,?,?,? " +
+                    "WHERE NOT EXISTS  (SELECT 1 FROM post WHERE guid=? )";
             preparedStatement = connection.prepareStatement(query);
             for (Post post : posts) {
                 preparedStatement.setString(1, post.getTitle());
@@ -340,7 +321,7 @@ public class FeedDao {
             //ASSIGN NEW POSTS TO USER
             query = "INSERT INTO users_posts(post_id,feed_id,user_id) " +
                     "SELECT ?,?,?" +
-                    " WHERE NOT EXISTS (SELECT 1 FROM users_posts WHERE post_id=? AND user_id=?)";
+                    "WHERE NOT EXISTS (SELECT 1 FROM users_posts WHERE post_id=? AND user_id=?)";
             preparedStatement = connection.prepareStatement(query);
             for (Long post_id : post_ids) {
                 preparedStatement.setLong(1, post_id);
@@ -354,16 +335,13 @@ public class FeedDao {
 
             connection.commit();
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot assign feed to user. SQL exception");
         } finally {
             IOUtils.closeQuietly(connection);
         }
     }
 
 
-    public Feed searchByPattern(String sessionEmail, Long feedId, String pattern, String sortField, String sortDir, int startRow) {
+    public Feed searchByPattern(String sessionEmail, Long feedId, String pattern, String sortField, String sortDir, int startRow) throws Exception {
         PreparedStatement statement;
         ResultSet result;
         long user_id;
@@ -372,10 +350,8 @@ public class FeedDao {
 
 
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
 
             //EXTRACT USER ID
-
             statement = connection.prepareStatement("SELECT id FROM users WHERE email=?");
             statement.setString(1, sessionEmail);
             result = statement.executeQuery();
@@ -400,17 +376,12 @@ public class FeedDao {
                         result.getBoolean("viewed")));
             }
 
-            connection.commit();
             feed.setPosts(list);
             return feed;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Cannot find posts by pattern feed from user. SQL exception");
         }
-
     }
 
-    public void removeFeed(String sessionEmail, Long feed_id) throws SQLException {
+    public void removeFeed(String sessionEmail, Long feed_id) throws Exception {
 
         Connection connection = null;
         PreparedStatement statement;
@@ -443,12 +414,6 @@ public class FeedDao {
 
             connection.commit();
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            if (connection != null) {
-                connection.rollback();
-            }
-            throw new RuntimeException("Cannot unassign feed from user. SQL exception");
         } finally {
             IOUtils.closeQuietly(connection);
         }

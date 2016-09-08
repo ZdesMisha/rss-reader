@@ -7,7 +7,7 @@ import jQuery from 'jquery';
 module.exports = React.createClass({
 
     mixins: [
-        Reflux.listenTo(SinglePostStore, 'onChange'),
+        Reflux.listenTo(SinglePostStore, 'onChange')
     ],
 
     getInitialState: function () {

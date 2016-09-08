@@ -2,12 +2,12 @@ package com.dataart.server.xml;
 
 import com.dataart.server.domain.Feed;
 import com.dataart.server.domain.Post;
+import com.dataart.server.exception.ServiceException;
 import com.dataart.server.utils.DateConverter;
 
 import javax.ejb.Stateless;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 import java.io.BufferedInputStream;
@@ -17,28 +17,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-public class RssReader {
+public class RssParser {
 
-    public Feed parseFeed(Feed feed) throws Exception {
+    public Feed parse(Feed feed) throws ServiceException {
+
         List<Post> posts = new ArrayList<>();
-        URL rssUrl = new URL(feed.getLink());
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        try (InputStream rssStream = rssUrl.openStream()) {
-            XMLEventReader xmlReader = xmlInputFactory.createXMLEventReader(new BufferedInputStream(rssStream));
-            while (xmlReader.hasNext()) {
-                XMLEvent event = xmlReader.nextEvent();
-                if (event.isStartElement() && event.asStartElement().getName().getLocalPart().toUpperCase().equals("ITEM")) {
-                    posts.add(processItem(xmlReader));
-                } else if (event.isStartElement() && event.asStartElement().getName().getLocalPart().toUpperCase().equals("TITLE")) {
-                    feed.setTitle(getContent(xmlReader.nextEvent()));
+
+        try {
+            URL rssUrl = new URL(feed.getLink());
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            try (InputStream rssStream = rssUrl.openStream()) {
+                XMLEventReader xmlReader = xmlInputFactory.createXMLEventReader(new BufferedInputStream(rssStream));
+                while (xmlReader.hasNext()) {
+                    XMLEvent event = xmlReader.nextEvent();
+                    if (event.isStartElement() && event.asStartElement().getName().getLocalPart().toUpperCase().equals("ITEM")) {
+                        posts.add(processItem(xmlReader));
+                    } else if (event.isStartElement() && event.asStartElement().getName().getLocalPart().toUpperCase().equals("TITLE")) {
+                        feed.setTitle(getContent(xmlReader.nextEvent()));
+                    }
                 }
+                feed.setPosts(posts);
             }
-            feed.setPosts(posts);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ServiceException("UNABLE TO PROCESS RSS RESOURCE");
         }
         return feed;
     }
 
-    private Post processItem(XMLEventReader reader) throws XMLStreamException {
+    private Post processItem(XMLEventReader reader) throws Exception {
         XMLEvent innerEvent;
         String title = "";
         String link = "";
@@ -87,6 +94,9 @@ public class RssReader {
         String result = "";
         if (event instanceof Characters) {
             result = event.asCharacters().getData();
+            if (result.contains("<")) {
+                result = result.substring(0, result.indexOf("<"));
+            }
         }
         return result;
     }

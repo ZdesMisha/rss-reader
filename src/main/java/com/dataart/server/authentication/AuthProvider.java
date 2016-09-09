@@ -3,6 +3,8 @@ package com.dataart.server.authentication;
 import com.dataart.server.domain.service.UserPrincipal;
 import com.dataart.server.exception.ServiceException;
 import com.dataart.server.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -42,10 +44,9 @@ public class AuthProvider {
     }
 
     public void validateToken(String token) throws Exception {
-        if (tokens.containsKey(token)) {
-            Jwts.parser().setSigningKey(SIGNATURE_KEY).parseClaimsJws(token);
-        } else {
-            throw new ServiceException("INVALID TOKEN");
+        Jwts.parser().setSigningKey(SIGNATURE_KEY).parseClaimsJws(token);
+        if (!tokens.containsKey(token)){
+            throw new ServiceException("NOT VALID TOKEN");
         }
     }
 
@@ -58,13 +59,13 @@ public class AuthProvider {
             put("alg", CRYPTO_ALG);
             put("typ", TOKEN_TYPE);
         }};
-        String token = Jwts.builder()
+        String newToken = Jwts.builder()
                 .setHeader(header)
                 .setSubject(email)
                 .signWith(SignatureAlgorithm.HS256, SIGNATURE_KEY)
                 .compact();
-        tokens.put(token, email);
-        return token;
+        tokens.put(newToken,email);
+        return newToken;
     }
 
     public void attemptAuthentication(UserPrincipal userPrincipal) throws Exception {

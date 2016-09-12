@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux';
 import AppStateReducer from './reducer-app-state';
-import LoginReducer from './reducer-login-template';
+import LoginErrorReducer from './reducer-login-error';
 
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
@@ -9,7 +9,7 @@ import LoginReducer from './reducer-login-template';
 
 const AllReducers = combineReducers({
     status: AppStateReducer,
-    template: LoginReducer
+    error: LoginErrorReducer
 });
 
 export default AllReducers

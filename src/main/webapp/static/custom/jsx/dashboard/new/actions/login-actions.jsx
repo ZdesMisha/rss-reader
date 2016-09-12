@@ -1,7 +1,7 @@
 export const changeStatus = (status) => {
     console.log("State changed to : ", status);
     return {
-        type: 'STATE_CHANGED',
+        type: "STATUS_CHANGED",
         payload: status
     }
 };

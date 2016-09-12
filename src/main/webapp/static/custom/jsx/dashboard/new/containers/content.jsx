@@ -19,6 +19,7 @@ class Content extends Component {
     }
 
     render() {
+        console.log('STATUS',this.props.status);
         if (!this.props.status) {
             return this.renderLoginForm();
         } else {

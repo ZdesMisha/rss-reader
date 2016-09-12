@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {changeStatus} from '../actions/actions'
+import {changeStatus} from '../actions/login-actions'
 import jQuery from 'jquery';
 
 
@@ -31,11 +31,6 @@ class RegistrationForm extends  Component{
         });
     }
 
-    switchToLogin(event) {
-        event.preventDefault();
-        this.props.changeStatus('login');
-    }
-
     render () {
         return <div className="container form-body">
 
@@ -50,8 +45,10 @@ class RegistrationForm extends  Component{
                        placeholder="Confirm Password" name="confirmedPassword"/>
                 <button onClick={this.register} className="btn btn-lg btn-primary btn-block form-signin">Sign in
                 </button>
-                <button onClick={this.switchToLogin} className="btn btn-lg btn-primary btn-block form-signin">Back to
-                    login page
+                <button onClick={(event) =>{
+                    event.preventDefault();
+                    this.props.changeStatus('login');}} className="btn btn-lg btn-primary btn-block form-signin">
+                    Back to login page
                 </button>
                 <div className="alert alert-danger" id="registration-alert" hidden="hidden">
                     <a href="#" className="close" data-dismiss="alert" aria-label="close"
@@ -67,13 +64,9 @@ class RegistrationForm extends  Component{
 }
 
 
-// Get actions and pass them as props to to UserList
-//      > now UserList has this.props.selectUser
 function matchDispatchToProps(dispatch) {
     return bindActionCreators({changeStatus: changeStatus}, dispatch);
 }
 
-// We don't want to return the plain UserList (component) anymore, we want to return the smart Container
-//      > UserList is now aware of state and actions
-export default connect(matchDispatchToProps)(RegistrationForm);
+export default connect(null,matchDispatchToProps)(RegistrationForm);
 

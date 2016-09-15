@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
-
+import MenuBar from './menu-bar';
+import News from './news';
 
 class Dashboard extends Component{
+    
+    
+    
     render(){
         return <div className="main-container">
-           <h2> Hello this is dashboard </h2>
+            <MenuBar></MenuBar>
+            <News></News>
         </div>
     }
 

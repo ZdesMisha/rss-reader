@@ -1,24 +1,13 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {changeStatus} from '../actions/login-actions'
+import * as loginActions from '../actions/login-actions'
+import ErrorBar from './login-error-bar'
 import jQuery from 'jquery';
 
 
 class RegistrationForm extends  Component{
 
-    register(event) {
-        event.preventDefault();
-        var form = jQuery('#form-registration');
-        var arr = form.serializeArray();
-        var json = {};
-        jQuery.map(arr, function (n, i) {
-            json[n['name']] = n['value'];
-        });
-        UserStore.register(json).then(function () {
-            this.showAlert();
-        }.bind(this));
-    }
 
     hideAlert() {
         jQuery('#registration-alert').hide();
@@ -43,12 +32,24 @@ class RegistrationForm extends  Component{
                 <label htmlFor="reg-pass-conf" className="sr-only">Password</label>
                 <input type="password" id="reg-pass-conf" className="form-control form-register-confirm"
                        placeholder="Confirm Password" name="confirmedPassword"/>
-                <button onClick={this.register} className="btn btn-lg btn-primary btn-block form-signin">Sign in
-                </button>
                 <button onClick={(event) =>{
                     event.preventDefault();
-                    this.props.changeStatus('login');}} className="btn btn-lg btn-primary btn-block form-signin">
-                    Back to login page
+                    var form = jQuery('#form-registration');
+                    var arr = form.serializeArray();
+                    var json = {};
+                    jQuery.map(arr, function (n, i) {
+                        json[n['name']] = n['value'];
+                    });
+                     console.log('PREPARED JSON',json);
+                    this.props.loginActions.register(json);}} className="btn btn-lg btn-primary btn-block form-signin">Sign
+                    in
+                </button>
+
+                <button onClick={(event) =>{
+                    event.preventDefault();
+                    this.props.loginActions.switchToLogin();}}
+                        className="btn btn-lg btn-primary btn-block form-signin">
+                    Registration
                 </button>
                 <div className="alert alert-danger" id="registration-alert" hidden="hidden">
                     <a href="#" className="close" data-dismiss="alert" aria-label="close"
@@ -56,6 +57,7 @@ class RegistrationForm extends  Component{
                     <span className="sr-only">Error:</span>
                     Such email is already exists
                 </div>
+                <ErrorBar />
             </form>
 
         </div>
@@ -65,7 +67,9 @@ class RegistrationForm extends  Component{
 
 
 function matchDispatchToProps(dispatch) {
-    return bindActionCreators({changeStatus: changeStatus}, dispatch);
+    return {
+        loginActions: bindActionCreators(loginActions, dispatch)
+    }
 }
 
 export default connect(null,matchDispatchToProps)(RegistrationForm);

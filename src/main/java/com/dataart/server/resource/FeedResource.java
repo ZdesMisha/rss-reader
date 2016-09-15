@@ -121,6 +121,7 @@ public class FeedResource {
     public Response getAllFeeds(@HeaderParam("Authorization") String token,
                                 @PathParam("pages") int pages) {
         try {
+            System.out.println("REFRESH FEED LIST   ");
             String email = authProvider.getEmailByToken(token);
             List<Feed> list = feedService.getAllPages(email, pages);
             return JsonBuilder.buildResponse(list, 200);

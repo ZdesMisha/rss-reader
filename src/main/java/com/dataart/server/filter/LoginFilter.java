@@ -48,6 +48,7 @@ public class LoginFilter implements Filter {
             String token = authProvider.prepareToken(principal.getEmail());
 
             httpResponse.setStatus(200);
+            httpResponse.setHeader("token",token);
             httpResponse.getWriter().print(String.format(TOKEN_TEMPLATE, token));
 
         } catch (Exception e) {

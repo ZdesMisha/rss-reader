@@ -9,8 +9,12 @@ import {Button} from 'react-bootstrap';
 import {Overlay} from 'react-bootstrap';
 import {Tooltip} from 'react-bootstrap';
 import * as FeedActions from '../actions/feed-actions';
+import * as ErrorActions from '../actions/error-actions';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {isRssValid} from '../validation/rss-validation';
+import RssErrorLabel from '../containers/rss-error-label'
+
 
 class FeedControlBar extends Component {
 
@@ -51,9 +55,9 @@ class FeedControlBar extends Component {
     }
 
     getValidationState() {
-        const value = this.state.value.length;
-        if (value >= 10) return 'success';
-        else if (value < 10) return 'error';
+        const value = this.state.value;
+        if (isRssValid(value))return 'success';
+        else return 'error';
     }
 
     handleChange(e) {
@@ -61,22 +65,17 @@ class FeedControlBar extends Component {
     }
 
     onAddBtnClick() {
-        var feed = {};
-        feed['link'] = this.state.value;
-        this.props.feedActions.addFeed(feed,this.props.feedList.page)    }
+        if (isRssValid(this.state.value)) {
+            var feed = {};
+            feed['link'] = this.state.value;
+            this.props.feedActions.addFeed(feed, this.props.feedList.page)
+        } else {
+            this.props.errorActions.showAddRssError('NOT VALID RSS FEED');
+        }
+    }
 
     onRefreshBtnClick() {
-    }
-
-    hideAlert() {
-        jQuery('#feed-control-bar-alert').hide();
-    }
-
-    showAlert() {
-        jQuery('#feed-control-bar-alert').show();
-        jQuery('#feed-control-bar-alert').fadeTo(2000, 500).slideUp(500, function () {
-            $("#feed-control-bar-alert").slideUp(500);
-        });
+        this.props.feedActions.refreshFeeds();
     }
 
     render() {
@@ -101,13 +100,8 @@ class FeedControlBar extends Component {
                     className="btn btn-xs btn-success glyphicon glyphicon-plus refresh-btn"/>
             <button ref="refreshBtn" onMouseEnter={this.toggleRefreshBtnTooltip.bind(this)}
                     onMouseOut={this.hideRefreshBtnTooltip.bind(this)}
-                    onClick={this.onRefreshBtnClick} className="btn btn-xs btn-primary glyphicon glyphicon-repeat"/>
-            <div className="alert alert-danger dashboard-alert" id="feed-control-bar-alert" hidden="hidden">
-                <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
-                   onClick={this.hideAlert}>&times;</a>
-                <span className="sr-only">Error:</span>
-                Server error occurred
-            </div>
+                    onClick={this.onRefreshBtnClick.bind(this)}
+                    className="btn btn-xs btn-primary glyphicon glyphicon-repeat"/>
                 </span>
             <Overlay {...addBtnProps} placement="top">
                 <Tooltip id="add-right">Add feed</Tooltip>
@@ -133,12 +127,7 @@ class FeedControlBar extends Component {
                             />
                             <FormControl.Feedback />
                         </FormGroup>
-                        <div className="alert alert-danger dashboard-alert" id="feed-control-bar-alert">
-                            <a href="#" className="close alert-close-btn" data-dismiss="alert" aria-label="close"
-                               onClick={this.hideAlert}>&times;</a>
-                            <span className="sr-only">Error:</span>
-                            Unable to process rss resource
-                        </div>
+                        <RssErrorLabel/>
                         <Button onClick={this.onAddBtnClick.bind(this)}>
                             Submit
                         </Button>
@@ -160,7 +149,8 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
     return {
-        feedActions: bindActionCreators(FeedActions, dispatch)
+        feedActions: bindActionCreators(FeedActions, dispatch),
+        errorActions: bindActionCreators(ErrorActions, dispatch)
     }
 }
 

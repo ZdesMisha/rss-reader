@@ -20,6 +20,7 @@ class Post extends Component{
     setViewed () {
         if (!this.props.isViewed) {
             this.setState({style: {'background-color': '#a7d0f2'}});
+            this.props.postActions.setPostViewed(this.props.id)
         }
         this.props.postActions.getPostInfo(this.props.id)
     }

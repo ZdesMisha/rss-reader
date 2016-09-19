@@ -96,7 +96,7 @@ export function getPostInfo(id) {
                     link: jsonBody.link,
                     pubDate: jsonBody.pubDate
                 }
-            })
+            });
         }).catch(() => {
             dispatch({
                 type: 'SERVER_ERROR',
@@ -116,16 +116,16 @@ export function search(pattern) {
         });
         var viewedFeed = getState().viewedFeed.feed;
         var postList = getState().postList;
-        console.log('FEED SEARCH ',viewedFeed);
+        console.log('FEED SEARCH ', viewedFeed);
         dispatch(getPage(viewedFeed.id, pattern, postList.sortField, postList.sortDir, 0))
     }
 }
 
-export function sort(direction){
+export function sort(direction) {
     return (dispatch, getState) => {
         var viewedFeed = getState().viewedFeed.feed;
         var postList = getState().postList;
-        if (postList.sortDir!=direction){
+        if (postList.sortDir != direction) {
             dispatch({
                 type: 'CLEAN_POST_STORE'
             });
@@ -134,5 +134,33 @@ export function sort(direction){
             });
             dispatch(getPage(viewedFeed.id, postList.searchPattern, postList.sortField, direction, 0))
         }
+    }
+}
+
+
+export function setPostViewed(id){
+    return dispatch => {
+        return fetch(setViewedUrl + id, {
+            credentials: "include",
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        }).then(result => {
+            if (result.status == 200) {
+                dispatch({
+                    type:'POST_VIEWED'
+                })
+            } else {
+                throw err;
+            }
+        }).catch(() => {
+            dispatch({
+                type: 'SERVER_ERROR',
+                payload: {message: "UNABLE TO GET POSTS PAGE"}
+            })
+        })
     }
 }

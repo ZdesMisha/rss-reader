@@ -1,5 +1,4 @@
 import React from 'react';
-import Fetch from 'whatwg-fetch';
 
 
 const SERVER_HOST = __SERVER_HOST__;

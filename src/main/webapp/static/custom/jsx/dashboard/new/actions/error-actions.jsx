@@ -9,3 +9,15 @@ export function hideError() {
         type: 'HIDE_ERROR'
     }
 }
+
+export function hideAddRssError(){
+    return {
+        type: 'ADD_RSS_HIDE_ERROR'
+    }
+}
+export function showAddRssError(message){
+    return {
+        type: 'ADD_RSS_ERROR_OCCURRED',
+        payload: {message: message}
+    }
+}

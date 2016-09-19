@@ -6,6 +6,7 @@ import ViewedPostReducer from './reducer-viewed-post';
 import PostListReducer from './reducer-post-list';
 import DashboardErrorReducer from './reducer-dashboard-error';
 import ViewedFeedReducer from './reducer-viewed-feed';
+import rssAddErrorLabel from './reducer-add-rss-error-label';
 
 
 const AllReducers = combineReducers({
@@ -15,7 +16,8 @@ const AllReducers = combineReducers({
     postList: PostListReducer,
     viewedPost: ViewedPostReducer,
     dashboardError: DashboardErrorReducer,
-    viewedFeed: ViewedFeedReducer
+    viewedFeed: ViewedFeedReducer,
+    rssLabelError: rssAddErrorLabel
 
 });
 

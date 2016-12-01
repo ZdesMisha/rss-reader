@@ -4,21 +4,22 @@ import LoginErrorReducer from './reducer-login-error';
 import FeedListReducer from './reducer-feed-list';
 import ViewedPostReducer from './reducer-viewed-post';
 import PostListReducer from './reducer-post-list';
-import DashboardErrorReducer from './reducer-dashboard-error';
+import MainErrorReducer from './reducer-main-error';
+import RegistrationErrorReducer from './reducer-registration-error';
 import ViewedFeedReducer from './reducer-viewed-feed';
-import rssAddErrorLabel from './reducer-add-rss-error-label';
+import RssAddErrorReducer from './reducer-add-rss-error';
 
 
 const AllReducers = combineReducers({
     status: AppStateReducer,
-    error: LoginErrorReducer,
     feedList: FeedListReducer,
     postList: PostListReducer,
     viewedPost: ViewedPostReducer,
-    dashboardError: DashboardErrorReducer,
     viewedFeed: ViewedFeedReducer,
-    rssLabelError: rssAddErrorLabel
-
+    mainError: MainErrorReducer,
+    addRssError: RssAddErrorReducer,
+    loginError: LoginErrorReducer,
+    registrationError: RegistrationErrorReducer
 });
 
 export default AllReducers

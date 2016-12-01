@@ -1,12 +1,11 @@
 export default function (state = {hidden: true, message: ''}, action) {
     switch (action.type) {
-        case 'SHOW_LOGIN_ERROR':
-            return {hidden: false, message: action.message};
+        case 'SHOW_RSS_ADD_ERROR':
+            return {hidden: false, message: action.payload.message};
             break;
-        case 'HIDE_LOGIN_ERROR':
+        case 'HIDE_RSS_ADD_ERROR':
             return {hidden: true, message: ''};
             break;
     }
     return state;
 }
-

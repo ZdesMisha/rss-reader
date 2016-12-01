@@ -63,8 +63,11 @@ export function changeViewedFeed(id, title) {
             }
         });
         dispatch({
-            type: 'CLEAN_VIEWED_POST'
+            type: 'CLEAN_POST_STORE'
         });
+        dispatch({
+            type: 'CLEAN_VIEWED_POST'
+        })
         dispatch(getPage(id, '', 'pubDate', 'desc', 0))
     }
 }
@@ -138,7 +141,7 @@ export function sort(direction) {
 }
 
 
-export function setPostViewed(id){
+export function setPostViewed(id) {
     return dispatch => {
         return fetch(setViewedUrl + id, {
             credentials: "include",
@@ -151,7 +154,7 @@ export function setPostViewed(id){
         }).then(result => {
             if (result.status == 200) {
                 dispatch({
-                    type:'POST_VIEWED'
+                    type: 'POST_VIEWED'
                 })
             } else {
                 throw err;

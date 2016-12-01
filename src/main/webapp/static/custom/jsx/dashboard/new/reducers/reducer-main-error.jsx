@@ -3,15 +3,13 @@ export default function (state = {
     message: ''
 }, action) {
     switch (action.type) {
-        case 'SHOW_ERROR':
-            console.log('SERVER ERROR SHOW', action.payload);
+        case 'SHOW_MAIN_ERROR':
             return {
                 show: true,
-                message: action.payload
+                message: action.payload.message
             };
             break;
-        case 'HIDE_ERROR':
-            console.log('ERROR HIDE', action.payload);
+        case 'HIDE_MAIN_ERROR':
             return {
                 show: false,
                 message: ''

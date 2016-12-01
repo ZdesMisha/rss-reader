@@ -1,23 +1,34 @@
-export function showError() {
-    return {
-        type: 'SHOW_ERROR',
-        payload: 'TEST ERROR MESSAGE'
-    }
-}
-export function hideError() {
-    return {
-        type: 'HIDE_ERROR'
-    }
-}
 
 export function hideAddRssError(){
     return {
-        type: 'ADD_RSS_HIDE_ERROR'
+        type: 'HIDE_RSS_ADD_ERROR'
     }
 }
 export function showAddRssError(message){
     return {
-        type: 'ADD_RSS_ERROR_OCCURRED',
+        type: 'SHOW_RSS_ADD_ERROR',
+        payload: {message: message}
+    }
+}
+export function hideRegistrationError(){
+    return {
+        type: 'HIDE_REGISTRATION_ERROR'
+    }
+}
+export function showRegistrationError(message){
+    return {
+        type: 'SHOW_REGISTRATION_ERROR',
+        payload: {message: message}
+    }
+}
+export function hideLoginError(){
+    return {
+        type: 'HIDE_LOGIN_ERROR'
+    }
+}
+export function showLoginError(message){
+    return {
+        type: 'SHOW_LOGIN_ERROR',
         payload: {message: message}
     }
 }

@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import * as loginActions from '../actions/login-actions'
-import ErrorBar from './login-error-bar'
+import ErrorBar from './registration-error-bar'
 import jQuery from 'jquery';
 
 
-class RegistrationForm extends  Component{
+class RegistrationForm extends Component {
 
 
     hideAlert() {
@@ -20,7 +20,7 @@ class RegistrationForm extends  Component{
         });
     }
 
-    render () {
+    render() {
         return <div className="container form-body">
 
             <form id="form-registration" className="form-signin form-register">
@@ -41,7 +41,8 @@ class RegistrationForm extends  Component{
                         json[n['name']] = n['value'];
                     });
                      console.log('PREPARED JSON',json);
-                    this.props.loginActions.register(json);}} className="btn btn-lg btn-primary btn-block form-signin">Sign
+                    this.props.loginActions.register(json);}} className="btn btn-lg btn-primary btn-block form-signin">
+                    Sign
                     in
                 </button>
 
@@ -49,7 +50,7 @@ class RegistrationForm extends  Component{
                     event.preventDefault();
                     this.props.loginActions.switchToLogin();}}
                         className="btn btn-lg btn-primary btn-block form-signin">
-                    Registration
+                    Back to login
                 </button>
                 <div className="alert alert-danger" id="registration-alert" hidden="hidden">
                     <a href="#" className="close" data-dismiss="alert" aria-label="close"
@@ -72,5 +73,5 @@ function matchDispatchToProps(dispatch) {
     }
 }
 
-export default connect(null,matchDispatchToProps)(RegistrationForm);
+export default connect(null, matchDispatchToProps)(RegistrationForm);
 

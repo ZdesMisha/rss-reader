@@ -13,7 +13,7 @@ import * as ErrorActions from '../actions/error-actions';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {isRssValid} from '../validation/rss-validation';
-import RssErrorLabel from '../containers/rss-error-label'
+import RssErrorLabel from './rss-error-bar'
 
 
 class FeedControlBar extends Component {

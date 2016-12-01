@@ -5,8 +5,7 @@ import jQuery from 'jquery';
 import * as ErrorActions from '../actions/error-actions';
 
 
-
-class LoginError extends Component {
+class RegistrationError extends Component {
 
     hideAlert() {
         jQuery('#login-alert').hide();
@@ -23,7 +22,7 @@ class LoginError extends Component {
     render() {
         return <div className="alert alert-danger" id="login-alert" hidden={this.props.error.hidden}>
             <a href="#" className="close" data-dismiss="alert" aria-label="close"
-               onClick={this.props.errorActions.hideLoginError}>&times;</a>
+               onClick={this.props.errorActions.hideRegistrationError}>&times;</a>
             <span className="sr-only">Error:</span>
             {this.props.error.message}
         </div>
@@ -33,10 +32,9 @@ class LoginError extends Component {
 
 function mapStateToProps(state) {
     return {
-        error: state.loginError
+        error: state.registrationError
     };
 }
-
 
 function matchDispatchToProps(dispatch) {
     return {
@@ -44,6 +42,7 @@ function matchDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, matchDispatchToProps)(LoginError);
+export default connect(mapStateToProps, matchDispatchToProps)(RegistrationError);
+
 
 

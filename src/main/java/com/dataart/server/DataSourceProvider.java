@@ -36,5 +36,4 @@ public class DataSourceProvider {
             throw new RuntimeException("Unable to initiate datasource");
         }
     }
-
 }

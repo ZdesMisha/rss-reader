@@ -24,6 +24,7 @@ public class AuthProvider {
 
     @Inject
     private UserService userService;
+    //here is a comment for dev branch
 
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
     private String SIGNATURE_KEY;
